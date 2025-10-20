@@ -1,0 +1,889 @@
+.home {
+  width: 100%;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Background Image Slider */
+.hero-background-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
+}
+
+.background-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  animation: slideShow 32s infinite;
+}
+
+.background-slide:nth-child(1) { 
+  animation-delay: 0s;
+}
+.background-slide:nth-child(2) { animation-delay: 8s; }
+.background-slide:nth-child(3) { animation-delay: 16s; }
+.background-slide:nth-child(4) { animation-delay: 24s; }
+
+@keyframes slideShow {
+  0% { 
+    opacity: 0; 
+    transform: scale(1);
+  }
+  3% { 
+    opacity: 1; 
+    transform: scale(1);
+  }
+  22% { 
+    opacity: 1; 
+    transform: scale(1.05);
+  }
+  25% { 
+    opacity: 0; 
+    transform: scale(1.08);
+  }
+  100% { 
+    opacity: 0; 
+    transform: scale(1.08);
+  }
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.1));
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(139,0,0,0.15) 100%);
+}
+
+.hero-decorations {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-decoration {
+  position: absolute;
+  opacity: 0.3;
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Removed shubh-vivah-top - now in card */
+
+@keyframes float {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-15px); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 60px 20px;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.welcome-text {
+  text-align: left;
+  padding: 40px;
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.welcome-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 25px;
+  text-shadow: 2px 2px 6px rgba(139, 0, 0, 0.7);
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  line-height: 1.4;
+}
+
+.welcome-paragraph {
+  font-size: 20px;
+  color: white;
+  line-height: 2;
+  margin-bottom: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  font-weight: 500;
+}
+
+/* Rules Section - Separate Section Below Hero */
+.rules-section-wrapper {
+  position: relative;
+  padding: 60px 0;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.rules-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+}
+
+.rules-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.rules-container {
+  position: relative;
+  z-index: 2;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.rules-main-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin-bottom: 40px;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.rules-content {
+  color: white;
+  text-align: center;
+}
+
+.rules-subtitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #FFD700;
+  margin-bottom: 20px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.rules-paragraph {
+  font-size: 18px;
+  color: white;
+  line-height: 1.8;
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rules-paragraph strong {
+  color: #FFD700;
+  font-weight: 700;
+}
+
+.alert-box {
+  background: rgba(255, 215, 0, 0.15);
+  border: 2px solid rgba(255, 215, 0, 0.5);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
+}
+
+.alert-text {
+  font-size: 18px;
+  color: white;
+  line-height: 1.7;
+  margin: 0;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.alert-text strong {
+  color: #FFD700;
+  font-weight: 700;
+}
+
+/* Three Section Layout */
+.three-section-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  align-items: start;
+}
+
+.section-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 15px;
+  padding: 30px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.section-card:hover {
+  transform: translateY(-5px);
+  border-color: #FFD700;
+  box-shadow: 0 12px 40px rgba(255, 215, 0, 0.4);
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FFD700;
+  margin-bottom: 25px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  text-align: center;
+  padding-bottom: 15px;
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+.section-content {
+  color: white;
+  text-align: left;
+}
+
+/* Payment Details Styling */
+.payment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.payment-method {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  padding: 18px;
+  backdrop-filter: blur(8px);
+}
+
+.payment-method-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFD700;
+  margin-bottom: 15px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.upi-details, .bank-details {
+  color: white;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.upi-details p, .bank-details p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.upi-id {
+  font-size: 18px !important;
+  font-weight: 600;
+  color: #FFD700 !important;
+}
+
+.payment-note {
+  font-style: italic;
+  color: #FFD700 !important;
+}
+
+.payment-process {
+  background: rgba(255, 215, 0, 0.2);
+  border: 2px solid #FFD700;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.process-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #FFD700;
+  margin-bottom: 15px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.process-steps {
+  color: white;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  padding-left: 20px;
+}
+
+.process-steps li {
+  margin-bottom: 8px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Amount Display Box */
+.payment-amount-box {
+  background: rgba(255, 215, 0, 0.1);
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  border-radius: 12px;
+  padding: 22px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.amount-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.amount-label {
+  font-size: 18px;
+  font-weight: 500;
+  color: white;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.amount-value {
+  font-size: 42px;
+  font-weight: 700;
+  color: #FFD700;
+  font-family: 'Poppins', sans-serif;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+  animation: glow 2s ease-in-out infinite;
+}
+
+.amount-note {
+  font-size: 14px;
+  color: white;
+  font-style: italic;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Payment Process Box */
+.payment-process-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.hero-card {
+  background: transparent;
+  backdrop-filter: none;
+  border-radius: 0;
+  padding: 50px 40px;
+  border: none;
+  box-shadow: none;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-content {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.shubh-vivah-card-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0;
+}
+
+.card-shubh-vivah {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.hero-title {
+  font-size: 56px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  text-shadow: 3px 3px 6px rgba(139, 0, 0, 0.5),
+               0 0 20px rgba(255, 215, 0, 0.3);
+  animation: fadeIn 1s ease-out, glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 3px 3px 6px rgba(139, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3); }
+  50% { text-shadow: 3px 3px 6px rgba(139, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.5); }
+}
+
+.hero-subtitle {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 30px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1.2s ease-out;
+}
+
+.hero-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  margin: 30px 0;
+  font-size: 32px;
+  animation: fadeIn 1.3s ease-out;
+}
+
+.hero-divider span {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.hero-divider span:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeIn 1.4s ease-out;
+}
+
+.btn-glow {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  animation: buttonGlow 2s ease-in-out infinite;
+}
+
+@keyframes buttonGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+  50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+}
+
+.btn-white {
+  background: white;
+  color: #DC143C;
+  border-color: white;
+}
+
+.btn-white:hover {
+  background: #FFD700;
+  color: #8B0000;
+  border-color: #FFD700;
+}
+
+.btn-large {
+  font-size: 18px;
+  padding: 16px 40px;
+}
+
+/* Removed About Section */
+
+/* Removed Features Section */
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.feature-card {
+  text-align: center;
+  padding: 40px 30px;
+  transition: all 0.3s ease;
+}
+
+.feature-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.feature-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 15px;
+}
+
+.feature-description {
+  font-size: 16px;
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.cta-content {
+  text-align: center;
+}
+
+.cta-title {
+  font-size: 42px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 30px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 100vh;
+    padding: 10px 0;
+  }
+
+  .hero-content {
+    padding: 20px 10px;
+  }
+
+  .card-shubh-vivah {
+    width: 140px;
+  }
+
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .hero-card {
+    order: 1;
+    padding: 30px 20px;
+  }
+
+  .welcome-text {
+    order: 2;
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .welcome-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+
+  .welcome-paragraph {
+    font-size: 17px;
+    line-height: 1.8;
+    margin-bottom: 0;
+  }
+
+  .rules-section-wrapper {
+    padding: 40px 0;
+    min-height: 80vh;
+  }
+
+  .rules-container {
+    padding: 0 15px;
+  }
+
+  .rules-main-title {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  .rules-subtitle {
+    font-size: 20px;
+  }
+
+  .rules-paragraph {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+
+  .alert-text {
+    font-size: 16px;
+  }
+
+  .alert-box {
+    padding: 20px;
+  }
+
+  .rules-subtitle {
+    font-size: 18px;
+  }
+
+  .rules-paragraph {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .alert-text {
+    font-size: 13px;
+  }
+
+  .hero-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hero-buttons .btn {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 5px 0;
+  }
+
+  .hero-content {
+    padding: 15px 5px;
+  }
+
+  .card-shubh-vivah {
+    width: 120px;
+  }
+
+  .shubh-vivah-card-image {
+    margin: 20px 0;
+  }
+
+  .hero-layout {
+    gap: 20px;
+  }
+
+  .hero-card {
+    padding: 20px 15px;
+  }
+
+  .welcome-text {
+    padding: 25px 15px;
+    text-align: center;
+  }
+
+  .welcome-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  }
+
+  .welcome-paragraph {
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 0;
+    font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  }
+
+  .rules-section-wrapper {
+    padding: 30px 0;
+    min-height: 70vh;
+  }
+
+  .rules-container {
+    padding: 0 10px;
+  }
+
+  .rules-main-title {
+    font-size: 24px;
+    margin-bottom: 25px;
+  }
+
+  .rules-subtitle {
+    font-size: 18px;
+  }
+
+  .rules-paragraph {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .alert-text {
+    font-size: 14px;
+  }
+
+  .alert-box {
+    padding: 15px;
+  }
+
+  .rules-subtitle {
+    font-size: 15px;
+  }
+
+  .rules-paragraph {
+    font-size: 12px;
+    line-height: 1.5;
+    font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  }
+
+  .alert-text {
+    font-size: 11px;
+  }
+
+  .alert-box {
+    padding: 10px;
+  }
+
+  .hero-title {
+    font-size: 20px;
+    margin-top: 5px;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .hero-buttons {
+    gap: 8px;
+  }
+
+  .hero-buttons .btn {
+    padding: 10px 15px;
+    font-size: 12px;
+  }
+
+  /* Rules Section Mobile Responsive */
+  .three-section-layout {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .section-card {
+    padding: 20px;
+  }
+
+  .section-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .payment-method {
+    padding: 15px;
+  }
+
+  .payment-method-title {
+    font-size: 16px;
+  }
+
+  .process-title {
+    font-size: 16px;
+  }
+
+  .upi-details p, .bank-details p {
+    font-size: 14px;
+  }
+
+  .process-steps {
+    font-size: 14px;
+  }
+
+  .amount-value {
+    font-size: 36px;
+  }
+
+  .amount-label {
+    font-size: 16px;
+  }
+
+  .amount-note {
+    font-size: 12px;
+  }
+
+  .payment-amount-box {
+    padding: 20px;
+  }
+
+  .payment-process-box {
+    padding: 15px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

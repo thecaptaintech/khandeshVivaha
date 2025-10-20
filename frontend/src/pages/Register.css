@@ -1,0 +1,652 @@
+.register-page {
+  padding: 40px 0;
+  min-height: calc(100vh - 200px);
+  background: linear-gradient(135deg, #FFE5E5 0%, #FFF0F0 100%);
+}
+
+.register-card {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(220, 20, 60, 0.15);
+}
+
+.page-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #DC143C;
+  margin-bottom: 40px;
+  text-align: center;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+/* Step Indicator */
+.step-indicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.step-number {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #E0E0E0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.step.active .step-number {
+  background: #DC143C;
+  color: white;
+  box-shadow: 0 4px 15px rgba(220, 20, 60, 0.4);
+}
+
+.step.current .step-number {
+  background: linear-gradient(135deg, #DC143C, #FF6B6B);
+  color: white;
+  box-shadow: 0 4px 20px rgba(220, 20, 60, 0.5);
+  animation: pulse-step 2s infinite;
+}
+
+@keyframes pulse-step {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(220, 20, 60, 0.5);
+  }
+  50% {
+    box-shadow: 0 4px 30px rgba(220, 20, 60, 0.7);
+  }
+}
+
+.step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
+  text-align: center;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.step.active .step-title {
+  color: #DC143C;
+}
+
+.step-line {
+  flex: 1;
+  height: 3px;
+  background: #E0E0E0;
+  margin: 0 10px;
+  position: relative;
+  top: -20px;
+  transition: all 0.3s ease;
+}
+
+.step-line.active {
+  background: linear-gradient(to right, #DC143C, #FF6B6B);
+}
+
+/* Form Step */
+.form-step {
+  margin-top: 30px;
+}
+
+.step-heading {
+  font-size: 24px;
+  font-weight: 700;
+  color: #DC143C;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 3px solid #FFD700;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 2px solid #E0E0E0;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #DC143C;
+  box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.photo-count {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #DC143C;
+  font-weight: 600;
+}
+
+/* Form Navigation */
+.form-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  gap: 20px;
+}
+
+.form-navigation .btn {
+  padding: 14px 40px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline {
+  background: white;
+  border: 2px solid #DC143C;
+  color: #DC143C;
+}
+
+.btn-outline:hover {
+  background: #DC143C;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+}
+
+.btn-primary {
+  background: linear-gradient(45deg, #DC143C, #FF6B6B);
+  border: none;
+  color: white;
+  margin-left: auto;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success Card */
+.success-card {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 50px;
+  text-align: center;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(220, 20, 60, 0.15);
+}
+
+.success-icon {
+  font-size: 80px;
+  margin-bottom: 20px;
+  animation: bounce 1s ease-in-out;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.success-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #DC143C;
+  margin-bottom: 30px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.register-id-box {
+  background: linear-gradient(135deg, #FFE5E5, #FFF0F0);
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  border: 2px solid #FFD700;
+}
+
+.register-id-label {
+  font-size: 16px;
+  color: var(--text-light);
+  margin-bottom: 10px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.register-id {
+  font-size: 32px;
+  font-weight: 700;
+  color: #DC143C;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Alert */
+.alert {
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.alert-error {
+  background: #FFE5E5;
+  color: #DC143C;
+  border-left: 4px solid #DC143C;
+}
+
+.alert-info {
+  background: #E3F2FD;
+  color: #1976D2;
+  border-left: 4px solid #1976D2;
+  text-align: left;
+}
+
+.alert strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.alert p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* Registration Type Selector */
+.registration-type-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.type-card {
+  flex: 1;
+  max-width: 350px;
+  min-width: 280px;
+  padding: 40px;
+  border: 3px solid #E0E0E0;
+  border-radius: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.type-card:hover {
+  border-color: #DC143C;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(220, 20, 60, 0.2);
+}
+
+.type-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.type-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #DC143C;
+  margin-bottom: 15px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.type-description {
+  font-size: 15px;
+  color: var(--text-light);
+  margin-bottom: 25px;
+  line-height: 1.6;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.type-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.type-divider span {
+  font-size: 18px;
+  font-weight: 700;
+  color: #DC143C;
+  background: white;
+  padding: 10px 20px;
+  border: 2px solid #DC143C;
+  border-radius: 25px;
+}
+
+/* Biodata Upload Form */
+.biodata-upload-form {
+  margin-top: 40px;
+}
+
+.basic-details-section {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  border: 2px solid #DC143C;
+  margin-bottom: 30px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #DC143C;
+  margin-bottom: 25px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.basic-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.upload-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.upload-box {
+  text-align: center;
+  padding: 40px;
+  border: 3px dashed #DC143C;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #FFE5E5, #FFF0F0);
+  transition: all 0.3s ease;
+}
+
+.upload-box:hover {
+  background: linear-gradient(135deg, #FFD0D0, #FFE5E5);
+  transform: scale(1.02);
+}
+
+.upload-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.upload-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #DC143C;
+  margin-bottom: 15px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.upload-note {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 25px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input + label {
+  cursor: pointer;
+  padding: 12px 30px;
+  font-size: 16px;
+}
+
+.submit-section {
+  text-align: center;
+}
+
+.btn-large {
+  padding: 16px 50px;
+  font-size: 18px;
+}
+
+.back-btn-top {
+  margin-bottom: 20px;
+  padding: 10px 25px;
+  font-size: 14px;
+}
+
+/* Fade In Animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .register-card {
+    padding: 35px;
+  }
+
+  .page-title {
+    font-size: 32px;
+  }
+
+  .step-heading {
+    font-size: 22px;
+  }
+
+  .form-grid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-card {
+    padding: 30px 20px;
+  }
+
+  .page-title {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  /* Step Indicator Mobile */
+  .step-indicator {
+    margin-bottom: 40px;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .step-title {
+    font-size: 12px;
+  }
+
+  .step-line {
+    top: -15px;
+    margin: 0 5px;
+  }
+
+  .step-heading {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .form-navigation {
+    flex-direction: column-reverse;
+    gap: 15px;
+  }
+
+  .form-navigation .btn {
+    width: 100%;
+    padding: 12px 30px;
+    font-size: 15px;
+  }
+
+  .btn-primary {
+    margin-left: 0;
+  }
+
+  .success-card {
+    padding: 40px 25px;
+  }
+
+  .success-title {
+    font-size: 24px;
+  }
+
+  .register-id {
+    font-size: 28px;
+  }
+
+  /* Type Selector Mobile */
+  .registration-type-selector {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .type-card {
+    max-width: 100%;
+  }
+
+  .type-divider {
+    width: 100%;
+  }
+
+  /* Upload Section Mobile */
+  .upload-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .upload-box {
+    padding: 30px 20px;
+  }
+
+  .basic-details-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .basic-details-section {
+    padding: 25px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 25px 15px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 25px;
+  }
+
+  .step-number {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+
+  .step-title {
+    font-size: 11px;
+  }
+
+  .step-heading {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    font-size: 14px;
+  }
+
+  .form-input {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .success-icon {
+    font-size: 60px;
+  }
+
+  .success-title {
+    font-size: 22px;
+  }
+
+  .register-id {
+    font-size: 24px;
+  }
+}
