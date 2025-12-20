@@ -476,65 +476,62 @@ const ProfileDetail = () => {
               </div>
             </div>
 
-            {/* Contact Information - Only for Paid Users */}
-            {profile.payment_status === 'paid' ? (
-              <div className="profile-section contact-section">
-                <h3 className="section-heading">📞 {language === 'en' ? 'Contact Information' : 'संपर्क माहिती'}</h3>
-                <div className="section-content">
-                  {profile.contact_number && (
-                    <div className="detail-row">
-                      <span className="detail-label">{language === 'en' ? 'Mobile' : 'मोबाईल'}:</span>
-                      <span className="detail-value">{profile.contact_number}</span>
+            {/* Contact Information - Locked for all users (team will send manually) */}
+            <div className="profile-section">
+              <h3 className="section-heading">📞 {language === 'en' ? 'Contact Information' : 'संपर्क माहिती'}</h3>
+              <div className="locked-section">
+                <div className="locked-card">
+                  <div className="locked-card-header">
+                    <span className="locked-icon">🔒</span>
+                    <div className="locked-heading">
+                      {language === 'en'
+                        ? 'Unlock contact details with your KM profile'
+                        : 'तुमचे KM प्रोफाइल तयार करा आणि संपर्क माहिती अनलॉक करा'}
                     </div>
-                  )}
-                  
-                  {profile.mobile_no_1 && (
-                    <div className="detail-row">
-                      <span className="detail-label">{language === 'en' ? 'Mobile 1' : 'मोबाईल 1'}:</span>
-                      <span className="detail-value">{profile.mobile_no_1}</span>
-                    </div>
-                  )}
-                  
-                  {profile.mobile_no_2 && (
-                    <div className="detail-row">
-                      <span className="detail-label">{language === 'en' ? 'Mobile 2' : 'मोबाईल 2'}:</span>
-                      <span className="detail-value">{profile.mobile_no_2}</span>
-                    </div>
-                  )}
-                  
-                  {profile.email && (
-                    <div className="detail-row">
-                      <span className="detail-label">{language === 'en' ? 'Email' : 'ईमेल'}:</span>
-                      <span className="detail-value">{profile.email}</span>
-                    </div>
-                  )}
-                  
-                  {profile.permanent_address && (
-                    <div className="detail-row">
-                      <span className="detail-label">{language === 'en' ? 'Address' : 'पत्ता'}:</span>
-                      <span className="detail-value">{profile.permanent_address}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="profile-section locked-section">
-                <h3 className="section-heading">🔒 {language === 'en' ? 'Contact Information' : 'संपर्क माहिती'}</h3>
-                <div className="section-content">
-                  <div className="locked-message">
-                    <p className="locked-icon">🔒</p>
-                    <p className="locked-text">
-                      {language === 'en' 
-                        ? 'Contact details are available after payment verification. Please make payment of ₹1500 and contact admin.' 
-                        : 'पेमेंट पडताळणीनंतर संपर्क तपशील उपलब्ध आहेत. कृपया ₹1500 पेमेंट करा आणि प्रशासकाशी संपर्क साधा.'}
+                  </div>
+
+                  <p className="locked-description">
+                    {language === 'en'
+                      ? 'Register with Khandesh Matrimony to view verified contact numbers, receive personal assistance, and stay informed about new matches.'
+                      : 'खान्देश मॅट्रिमोनीवर नोंदणी करून खात्रीशीर संपर्क क्रमांक पाहा, वैयक्तिक सहकार्य मिळवा आणि नवीन जुळणीबद्दल अपडेट रहा.'}
+                  </p>
+
+                  <ul className="locked-benefits">
+                    {language === 'en' ? (
+                      <>
+                        <li>Verified contact sharing handled by our support desk.</li>
+                        <li>Curated profile suggestions that match your expectations.</li>
+                        <li>Priority guidance from the Khandesh Matrimony team.</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>खात्रीशीर संपर्क तपशील आमच्या सपोर्ट डेस्कमार्फत शेअर केले जातात.</li>
+                        <li>तुमच्या अपेक्षांना साजेशा प्रोफाइल्सची निवड करून मार्गदर्शन मिळवा.</li>
+                        <li>खान्देश मॅट्रिमोनी टीमकडून प्राधान्याने सहकार्य मिळवा.</li>
+                      </>
+                    )}
+                  </ul>
+
+                  <div className="locked-actions">
+                    <a className="locked-btn" href="/register">
+                      {language === 'en' ? 'Register & Explore' : 'नोंदणी करा आणि पुढे जा'}
+                    </a>
+                  </div>
+
+                  <div className="locked-support">
+                    <p className="locked-note">
+                      {language === 'en'
+                        ? 'Already registered? Reach us from your registered email or WhatsApp with your KM ID and the KM IDs you wish to access.'
+                        : 'आधीच नोंदणी केली आहे? तुमच्या नोंदणीकृत ईमेल किंवा WhatsApp वरून तुमचा KM आयडी आणि आवश्यक प्रोफाइल्सचे KM आयडी आम्हाला पाठवा.'}
                     </p>
-                    <p className="contact-admin">
-                      📧 info@khandeshmatrimony.com
-                    </p>
+                    <div className="locked-contact-chips">
+                      <span className="contact-chip">📧 info@khandeshmatrimony.com</span>
+                      <span className="contact-chip">📱 WhatsApp: 9167681454</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,166 @@
+.terms-and-conditions-page {
+  min-height: calc(100vh - 200px);
+  padding: 40px 0;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.terms-content {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 50px 40px;
+  line-height: 1.8;
+}
+
+.terms-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid #e74c3c;
+  position: relative;
+}
+
+.terms-title::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: #e74c3c;
+}
+
+.terms-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.terms-section {
+  padding: 25px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #e74c3c;
+  transition: all 0.3s ease;
+}
+
+.terms-section:hover {
+  background: #f0f2f5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateX(5px);
+}
+
+.section-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-heading::before {
+  content: '📋';
+  font-size: 1.2rem;
+}
+
+.section-content {
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0;
+  text-align: justify;
+}
+
+.terms-footer {
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 2px solid #e0e0e0;
+  text-align: center;
+}
+
+.terms-last-updated {
+  font-size: 0.95rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .terms-and-conditions-page {
+    padding: 20px 0;
+  }
+
+  .terms-content {
+    padding: 30px 20px;
+    border-radius: 12px;
+    margin: 0 15px;
+  }
+
+  .terms-title {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+  }
+
+  .terms-section {
+    padding: 20px 15px;
+  }
+
+  .section-heading {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  .section-content {
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  .terms-sections {
+    gap: 20px;
+  }
+
+  .terms-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-content {
+    padding: 25px 15px;
+    margin: 0 10px;
+  }
+
+  .terms-title {
+    font-size: 1.5rem;
+  }
+
+  .section-heading {
+    font-size: 1.2rem;
+  }
+
+  .section-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .terms-section {
+    padding: 15px 12px;
+  }
+}
+
+/* Marathi font support */
+[lang="mr"] .terms-content,
+[lang="mr"] .section-heading,
+[lang="mr"] .section-content {
+  font-family: 'Noto Sans Devanagari', 'Mukta', 'Arial Unicode MS', sans-serif;
+}
+

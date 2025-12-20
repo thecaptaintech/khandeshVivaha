@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Browse from './pages/Browse';
 import ProfileDetail from './pages/ProfileDetail';
+import TermsAndConditions from './pages/TermsAndConditions';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Footer from './components/Footer';
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/browse" element={<Browse />} />
                 <Route path="/profile/:id" element={<ProfileDetail />} />
+                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
               </Routes>

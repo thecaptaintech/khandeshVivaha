@@ -16,6 +16,10 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Remove Content-Type header for FormData - let axios set it automatically with boundary
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
   return config;
 });
 
@@ -74,6 +78,23 @@ export const deleteUser = async (id) => {
 
 export const updateUser = async (id, data) => {
   const response = await api.put(`/admin/users/${id}`, data);
+  return response.data;
+};
+
+// Settings APIs
+export const getSettings = async () => {
+  const response = await api.get('/admin/settings');
+  return response.data;
+};
+
+// Public settings API (for home page and registration success page)
+export const getPublicSettings = async () => {
+  const response = await api.get('/settings');
+  return response.data;
+};
+
+export const updateSettings = async (settings) => {
+  const response = await api.put('/admin/settings', settings);
   return response.data;
 };
 

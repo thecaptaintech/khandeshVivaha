@@ -9,9 +9,12 @@ import {
   rejectUser, 
   updatePaymentStatus,
   deleteUser,
-  updateUser
+  updateUser,
+  getSettings,
+  updateSettings
 } from '../../services/api';
 import { UPLOADS_URL } from '../../services/api';
+import api from '../../services/api';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -37,6 +40,7 @@ const AdminDashboard = () => {
   // Filter state
   const [filters, setFilters] = useState({
     gender: '',
+    maritalStatus: '',
     paymentStatus: '',
     registrationType: '',
     search: ''
@@ -45,6 +49,20 @@ const AdminDashboard = () => {
   // Edit modal state
   const [editingUser, setEditingUser] = useState(null);
   const [editFormData, setEditFormData] = useState({});
+  
+  // Settings state
+  const [settings, setSettings] = useState({
+    payment_qr_code: null,
+    contact_whatsapp: '9167681454',
+    contact_email: 'info@khandeshmatrimony.com',
+    upi_id: '',
+    registration_fee: '',
+    banner_text_english: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
+    banner_text_marathi: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.'
+  });
+  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [qrCodeFile, setQrCodeFile] = useState(null);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   useEffect(() => {
     // Redirect if not logged in
@@ -80,11 +98,96 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (isAuthenticated()) {
-      fetchUsers();
-      setCurrentPage(1); // Reset to first page when tab changes
+      if (activeTab === 'settings') {
+        fetchSettings();
+      } else {
+        fetchUsers();
+        setCurrentPage(1); // Reset to first page when tab changes
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, filters]);
+  
+  const fetchSettings = async () => {
+    setSettingsLoading(true);
+    try {
+      const data = await getSettings();
+      setSettings(data);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
+  
+  const handleSettingsChange = (key, value) => {
+    setSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+  
+  const handleQrCodeUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setQrCodeFile(file);
+    }
+  };
+  
+  const handleSaveSettings = async () => {
+    setSettingsLoading(true);
+    setSettingsSaved(false);
+    try {
+      let qrCodePath = settings.payment_qr_code;
+      
+      // Upload QR code if new file selected
+      if (qrCodeFile) {
+        try {
+          const uploadFormData = new FormData();
+          uploadFormData.append('qr_code', qrCodeFile);
+          
+          // Don't set Content-Type header - let axios set it automatically with boundary
+          const uploadResponse = await api.post('/admin/upload-qr', uploadFormData);
+          
+          if (uploadResponse.data && uploadResponse.data.qr_code_path) {
+            qrCodePath = uploadResponse.data.qr_code_path;
+          } else {
+            throw new Error('QR code upload failed - no path returned');
+          }
+        } catch (uploadError) {
+          console.error('QR code upload error:', uploadError);
+          const errorMessage = uploadError.response?.data?.message || uploadError.response?.data?.detail || uploadError.message || 'Unknown error';
+          alert(`Error uploading QR code: ${errorMessage}`);
+          setSettingsLoading(false);
+          return;
+        }
+      }
+      
+      // Prepare settings to update (only text fields, QR code path will be included)
+      const settingsToUpdate = {
+        contact_whatsapp: settings.contact_whatsapp || '',
+        contact_email: settings.contact_email || '',
+        upi_id: settings.upi_id || '',
+        registration_fee: settings.registration_fee || '',
+        payment_qr_code: qrCodePath || null,
+        banner_text_english: settings.banner_text_english || '',
+        banner_text_marathi: settings.banner_text_marathi || ''
+      };
+      
+      await updateSettings(settingsToUpdate);
+      setSettingsSaved(true);
+      setQrCodeFile(null);
+      setTimeout(() => setSettingsSaved(false), 3000);
+      
+      // Refresh settings to get updated values
+      await fetchSettings();
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      alert(`Error saving settings: ${error.response?.data?.message || error.message || 'Please try again.'}`);
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -109,6 +212,14 @@ const AdminDashboard = () => {
   // Filter users based on filters
   const getFilteredUsers = () => {
     let filtered = users;
+
+    if (filters.gender) {
+      filtered = filtered.filter(user => user.gender === filters.gender);
+    }
+
+    if (filters.maritalStatus) {
+      filtered = filtered.filter(user => user.marital_status === filters.maritalStatus);
+    }
 
     if (filters.paymentStatus) {
       filtered = filtered.filter(user => user.payment_status === filters.paymentStatus);
@@ -196,10 +307,42 @@ const AdminDashboard = () => {
     const firstName = nameParts[0] || '';
     const surname = nameParts.slice(1).join(' ') || '';
     
+    // Format date_of_birth to YYYY-MM-DD format - use string directly to avoid timezone issues
+    let formattedDate = '';
+    if (user.date_of_birth) {
+      if (user.date_of_birth instanceof Date) {
+        // If it's a Date object, use UTC methods to avoid timezone shifts
+        const year = user.date_of_birth.getUTCFullYear();
+        const month = String(user.date_of_birth.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(user.date_of_birth.getUTCDate()).padStart(2, '0');
+        formattedDate = `${year}-${month}-${day}`;
+      } else {
+        // It's a string - extract just the date part (YYYY-MM-DD) WITHOUT creating Date object
+        const dateStr = String(user.date_of_birth);
+        
+        // Simply extract YYYY-MM-DD pattern from the string - don't parse as Date
+        const dateMatch = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
+        if (dateMatch) {
+          // Use the matched date directly - this avoids any timezone conversion
+          formattedDate = dateMatch[0];
+        } else {
+          // Fallback: remove time part if present
+          formattedDate = dateStr.split('T')[0].split(' ')[0];
+        }
+        
+        // Final validation
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
+          console.error('Invalid date format:', dateStr, '->', formattedDate);
+          formattedDate = ''; // Clear invalid date
+        }
+      }
+    }
+    
     setEditFormData({ 
       ...user,
       first_name: firstName,
-      surname: surname
+      surname: surname,
+      date_of_birth: formattedDate
     });
   };
 
@@ -212,10 +355,36 @@ const AdminDashboard = () => {
 
   const handleSaveEdit = async () => {
     try {
+      // Validate age (18+)
+      if (editFormData.date_of_birth) {
+        const birthDate = new Date(editFormData.date_of_birth);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const dayDiff = today.getDate() - birthDate.getDate();
+        
+        let actualAge = age;
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          actualAge = age - 1;
+        }
+        
+        if (actualAge < 18) {
+          alert('Date of Birth: User must be 18 years or older to register.');
+          return;
+        }
+      }
+      
       // Combine first_name and surname into full_name
       const dataToUpdate = { ...editFormData };
       if (dataToUpdate.first_name || dataToUpdate.surname) {
         dataToUpdate.full_name = `${dataToUpdate.first_name || ''} ${dataToUpdate.surname || ''}`.trim();
+      }
+      
+      // Ensure date_of_birth is in YYYY-MM-DD format (date input already provides this)
+      if (dataToUpdate.date_of_birth) {
+        // Extract just the date part if it's in ISO format
+        const dateStr = String(dataToUpdate.date_of_birth);
+        dataToUpdate.date_of_birth = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
       }
       
       // Remove first_name and surname from the update data (they don't exist in DB)
@@ -348,9 +517,139 @@ const AdminDashboard = () => {
             >
               {t('rejected')} ({stats.rejected})
             </button>
+            <button
+              className={`tab ${activeTab === 'settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('settings')}
+            >
+              ⚙️ Settings
+            </button>
           </div>
         </div>
 
+        {/* Settings Tab Content */}
+        {activeTab === 'settings' ? (
+          <div className="settings-section card">
+            <h3 className="filters-title">⚙️ Registration Success Page Settings</h3>
+            {settingsSaved && (
+              <div className="alert alert-success" style={{background: '#d1fae5', color: '#065f46', padding: '12px', borderRadius: '8px', marginBottom: '20px'}}>
+                ✅ Settings saved successfully!
+              </div>
+            )}
+            
+            {settingsLoading ? (
+              <p>Loading settings...</p>
+            ) : (
+              <div className="settings-form">
+                <div className="filter-group" style={{marginBottom: '20px'}}>
+                  <label className="filter-label">Payment QR Code:</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleQrCodeUpload}
+                    className="filter-input"
+                  />
+                  {settings.payment_qr_code && !qrCodeFile && (
+                    <div style={{marginTop: '10px'}}>
+                      <p style={{fontSize: '14px', color: '#666', marginBottom: '5px'}}>Current QR Code:</p>
+                      <img 
+                        src={`${UPLOADS_URL}/${settings.payment_qr_code}`} 
+                        alt="QR Code" 
+                        style={{maxWidth: '200px', border: '1px solid #ddd', borderRadius: '8px'}}
+                      />
+                    </div>
+                  )}
+                  {qrCodeFile && (
+                    <div style={{marginTop: '10px'}}>
+                      <p style={{fontSize: '14px', color: '#666'}}>New file selected: {qrCodeFile.name}</p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="filter-group" style={{marginBottom: '20px'}}>
+                  <label className="filter-label">Contact/WhatsApp Number:</label>
+                  <input
+                    type="text"
+                    className="filter-input"
+                    value={settings.contact_whatsapp || ''}
+                    onChange={(e) => handleSettingsChange('contact_whatsapp', e.target.value)}
+                    placeholder="9167681454"
+                  />
+                </div>
+                
+                <div className="filter-group" style={{marginBottom: '20px'}}>
+                  <label className="filter-label">Contact Email:</label>
+                  <input
+                    type="email"
+                    className="filter-input"
+                    value={settings.contact_email || ''}
+                    onChange={(e) => handleSettingsChange('contact_email', e.target.value)}
+                    placeholder="info@khandeshmatrimony.com"
+                  />
+                </div>
+                
+                <div className="filter-group" style={{marginBottom: '20px'}}>
+                  <label className="filter-label">UPI ID:</label>
+                  <input
+                    type="text"
+                    className="filter-input"
+                    value={settings.upi_id || ''}
+                    onChange={(e) => handleSettingsChange('upi_id', e.target.value)}
+                    placeholder="9167681454@ybl"
+                  />
+                </div>
+                
+                <div className="filter-group" style={{marginBottom: '20px'}}>
+                  <label className="filter-label">Registration Fee:</label>
+                  <input
+                    type="text"
+                    className="filter-input"
+                    value={settings.registration_fee || ''}
+                    onChange={(e) => handleSettingsChange('registration_fee', e.target.value)}
+                    placeholder="₹1500 (6 months)"
+                  />
+                </div>
+
+                <div style={{borderTop: '2px solid #e5e7eb', paddingTop: '20px', marginTop: '30px', marginBottom: '20px'}}>
+                  <h4 style={{fontSize: '18px', fontWeight: '600', marginBottom: '20px', color: '#1f2937'}}>📢 Banner Text Settings</h4>
+                  
+                  <div className="filter-group" style={{marginBottom: '20px'}}>
+                    <label className="filter-label">Banner Text (English):</label>
+                    <textarea
+                      className="filter-input"
+                      rows="3"
+                      value={settings.banner_text_english || ''}
+                      onChange={(e) => handleSettingsChange('banner_text_english', e.target.value)}
+                      placeholder="Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage."
+                      style={{resize: 'vertical', minHeight: '80px'}}
+                    />
+                  </div>
+                  
+                  <div className="filter-group" style={{marginBottom: '20px'}}>
+                    <label className="filter-label">Banner Text (Marathi):</label>
+                    <textarea
+                      className="filter-input"
+                      rows="3"
+                      value={settings.banner_text_marathi || ''}
+                      onChange={(e) => handleSettingsChange('banner_text_marathi', e.target.value)}
+                      placeholder="खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या."
+                      style={{resize: 'vertical', minHeight: '80px', fontFamily: 'Noto Sans Devanagari, Mukta, Arial Unicode MS, sans-serif'}}
+                    />
+                  </div>
+                </div>
+                
+                <button 
+                  className="btn btn-primary" 
+                  onClick={handleSaveSettings}
+                  disabled={settingsLoading}
+                  style={{padding: '12px 30px', fontSize: '16px', fontWeight: '600'}}
+                >
+                  {settingsLoading ? 'Saving...' : '💾 Save Settings'}
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <React.Fragment>
         {/* Filter Section */}
         <div className="filters-section card">
           <h3 className="filters-title">🔍 Filters</h3>
@@ -376,7 +675,19 @@ const AdminDashboard = () => {
                 <option value="">All</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <option value="Divorcee">Divorcee</option>
+              </select>
+            </div>
+
+            <div className="filter-group">
+              <label className="filter-label">Marital Status:</label>
+              <select
+                className="filter-select"
+                value={filters.maritalStatus}
+                onChange={(e) => handleFilterChange('maritalStatus', e.target.value)}
+              >
+                <option value="">All</option>
+                <option value="Unmarried">Unmarried</option>
+                <option value="Divorced">Divorced</option>
                 <option value="Widow">Widow</option>
                 <option value="Widower">Widower</option>
               </select>
@@ -411,7 +722,7 @@ const AdminDashboard = () => {
             <div className="filter-group">
               <button 
                 className="btn-reset-filters"
-                onClick={() => setFilters({ gender: '', paymentStatus: '', registrationType: '', search: '' })}
+                onClick={() => setFilters({ gender: '', maritalStatus: '', paymentStatus: '', registrationType: '', search: '' })}
               >
                 Reset Filters
               </button>
@@ -438,6 +749,7 @@ const AdminDashboard = () => {
                       <th>ID</th>
                       <th>Name</th>
                       <th>Gender</th>
+                      <th>Marital Status</th>
                       <th>Age</th>
                       <th>Education</th>
                       <th>Contact</th>
@@ -453,6 +765,7 @@ const AdminDashboard = () => {
                       <td className="id-cell">{user.register_id}</td>
                       <td className="name-cell">{user.full_name}</td>
                       <td>{user.gender}</td>
+                      <td>{user.marital_status || 'N/A'}</td>
                       <td>{calculateAge(user.date_of_birth)}</td>
                       <td>{user.education || 'N/A'}</td>
                       <td>{user.contact_number}</td>
@@ -580,7 +893,8 @@ const AdminDashboard = () => {
           </>
           )}
         </div>
-      </div>
+          </React.Fragment>
+        )}
 
       {/* Edit Modal */}
       {editingUser && (
@@ -748,12 +1062,22 @@ const AdminDashboard = () => {
                   </div>
 
                   <div className="form-group-modal">
-                    <label>Birth Date:</label>
+                    <label>Birth Date (Must be 18+ years):</label>
                     <input
                       type="date"
                       name="date_of_birth"
-                      value={editFormData.date_of_birth?.split('T')[0] || ''}
+                      value={editFormData.date_of_birth || ''}
                       onChange={handleEditFormChange}
+                      max={(() => {
+                        const today = new Date();
+                        const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+                        return maxDate.toISOString().split('T')[0];
+                      })()}
+                      min={(() => {
+                        const today = new Date();
+                        const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+                        return minDate.toISOString().split('T')[0];
+                      })()}
                       className="form-input-modal"
                     />
                   </div>
@@ -1286,6 +1610,7 @@ const AdminDashboard = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

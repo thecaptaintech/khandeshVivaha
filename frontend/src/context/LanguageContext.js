@@ -121,6 +121,9 @@ export const translations = {
     footerPhone: 'Phone',
     footerEmail: 'Email',
     footerRights: '© 2025 Khandesh Matrimony. All rights reserved.',
+    footerDisclaimer: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
+    topDisclaimer: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
+    termsAndConditions: 'Terms & Conditions',
   },
   
   mr: {
@@ -241,6 +244,9 @@ export const translations = {
     footerPhone: 'फोन',
     footerEmail: 'ईमेल',
     footerRights: '© २०२५ खान्देश मॅट्रिमोनी. सर्व हक्क राखीव.',
+    footerDisclaimer: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.',
+    topDisclaimer: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.',
+    termsAndConditions: 'अटी व शर्ती',
   }
 };
 

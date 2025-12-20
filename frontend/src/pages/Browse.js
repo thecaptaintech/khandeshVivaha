@@ -37,27 +37,22 @@ const Browse = () => {
     setLoading(true);
   }, []);
 
-  // Handle URL parameters and clear sessionStorage conflicts
+  // Simple URL parameter handling
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const gender = params.get('gender');
     
-    console.log('URL changed:', location.search);
-    console.log('Gender from URL:', gender);
-    console.log('Current genderFilter:', genderFilter);
-    
-    // If no gender in URL, clear any cached filter and show all
     if (!gender) {
-      console.log('No gender in URL, clearing filter');
-      sessionStorage.removeItem('browseGenderFilter');
       setGenderFilter('');
+      setCurrentPage(1);
     } else {
-      console.log('Setting genderFilter to:', gender);
       setGenderFilter(gender);
+      setCurrentPage(1);
     }
   }, [location.search]);
 
   useEffect(() => {
+    setLoading(true);
     fetchProfiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [genderFilter]);
@@ -72,16 +67,37 @@ const Browse = () => {
     sessionStorage.setItem('browseCurrentPage', currentPage.toString());
   }, [genderFilter, searchTerm, educationFilter, occupationFilter, incomeFilter, currentPage]);
 
-  // Restore scroll position when coming back
+  // Simple restoration when coming back from profile
   useEffect(() => {
+    const savedPage = sessionStorage.getItem('browseReturnPage');
     const savedScrollPosition = sessionStorage.getItem('browseScrollPosition');
-    if (savedScrollPosition) {
+    const savedFilter = sessionStorage.getItem('browseReturnFilter');
+    
+    if (savedPage && savedScrollPosition && savedFilter !== null && !loading && profiles.length > 0) {
+      console.log('Restoring from profile view - Page:', savedPage, 'Filter:', savedFilter, 'Scroll:', savedScrollPosition);
+      
+      // Restore filter and page
+      setGenderFilter(savedFilter);
+      setCurrentPage(parseInt(savedPage));
+      
+      // Update URL to match the filter
+      if (savedFilter && savedFilter !== '') {
+        window.history.replaceState({}, '', `/browse?gender=${savedFilter}`);
+      } else {
+        window.history.replaceState({}, '', '/browse');
+      }
+      
+      // Restore scroll position
       setTimeout(() => {
         window.scrollTo(0, parseInt(savedScrollPosition));
+        
+        // Clean up saved state
+        sessionStorage.removeItem('browseReturnPage');
         sessionStorage.removeItem('browseScrollPosition');
-      }, 100);
+        sessionStorage.removeItem('browseReturnFilter');
+      }, 300);
     }
-  }, []);
+  }, [loading, profiles.length]);
 
   // Save scroll position before leaving
   useEffect(() => {
@@ -100,14 +116,8 @@ const Browse = () => {
         status: 'approved',
       };
 
-      console.log('Fetching all approved profiles');
-      console.log('genderFilter (for frontend filtering):', genderFilter);
-
       // Force fresh data by adding timestamp to prevent caching
       const data = await getUsers({...filters, _t: Date.now()});
-      
-      console.log('Received profiles:', data.length);
-      console.log('All profiles:', data.map(p => ({ name: p.full_name, gender: p.gender, id: p.register_id })));
       
       setProfiles(data);
     } catch (error) {
@@ -117,18 +127,6 @@ const Browse = () => {
     }
   };
 
-  const calculateAge = (dateOfBirth) => {
-    const today = new Date();
-    const birthDate = new Date(dateOfBirth);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
-    return age;
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -140,8 +138,31 @@ const Browse = () => {
   };
 
   const filteredProfiles = profiles.filter(profile => {
-    // Gender filter
-    const matchesGender = !genderFilter || profile.gender === genderFilter;
+    // Only show approved and paid profiles
+    if (profile.approval_status !== 'approved' || profile.payment_status !== 'paid') {
+      return false;
+    }
+    
+    // Filter by marital status only - all filters are marital_status based
+    let matchesFilter = true;
+    if (genderFilter) {
+      if (genderFilter === 'Female') {
+        // Female = Unmarried + Female gender
+        matchesFilter = profile.marital_status === 'Unmarried' && profile.gender === 'Female';
+      } else if (genderFilter === 'Male') {
+        // Male = Unmarried + Male gender
+        matchesFilter = profile.marital_status === 'Unmarried' && profile.gender === 'Male';
+      } else if (genderFilter === 'Divorcee') {
+        // Divorcee = Divorced marital status (any gender)
+        matchesFilter = profile.marital_status === 'Divorced';
+      } else if (genderFilter === 'Widow') {
+        // Widow = Widow marital status (any gender)
+        matchesFilter = profile.marital_status === 'Widow';
+      } else if (genderFilter === 'Widower') {
+        // Widower = Widower marital status (any gender)
+        matchesFilter = profile.marital_status === 'Widower';
+      }
+    }
     
     // Search filter
     const searchLower = searchTerm.toLowerCase();
@@ -160,7 +181,7 @@ const Browse = () => {
     const matchesIncome = !incomeFilter || 
       (profile.income && profile.income.toLowerCase().includes(incomeFilter.toLowerCase()));
     
-    return matchesGender && matchesSearch && matchesEducation && matchesOccupation && matchesIncome;
+    return matchesFilter && matchesSearch && matchesEducation && matchesOccupation && matchesIncome;
   });
 
   const clearAllFilters = () => {
@@ -170,6 +191,65 @@ const Browse = () => {
     setCurrentPage(1);
   };
 
+  // Save navigation state when going to profile
+  const saveNavigationState = () => {
+    sessionStorage.setItem('browseReturnPage', currentPage.toString());
+    sessionStorage.setItem('browseScrollPosition', window.pageYOffset.toString());
+    sessionStorage.setItem('browseReturnFilter', genderFilter);
+  };
+
+  // Copy registration number to clipboard
+  const copyRegistrationNumber = async (registerId, e) => {
+    if (!e || !e.currentTarget) {
+      return;
+    }
+    
+    e.stopPropagation(); // Prevent any parent click events
+    e.preventDefault(); // Prevent default behavior
+    
+    const element = e.currentTarget;
+    if (!element) {
+      return;
+    }
+    
+    const originalText = element.textContent || registerId;
+    
+    try {
+      await navigator.clipboard.writeText(registerId);
+      // Show feedback
+      element.textContent = language === 'en' ? '✓ Copied!' : '✓ कॉपी झाले!';
+      element.style.color = '#4ade80';
+      setTimeout(() => {
+        if (element) {
+          element.textContent = originalText;
+          element.style.color = '';
+        }
+      }, 1500);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      // Fallback for older browsers
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = registerId;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        // Show feedback
+        element.textContent = language === 'en' ? '✓ Copied!' : '✓ कॉपी झाले!';
+        element.style.color = '#4ade80';
+        setTimeout(() => {
+          if (element) {
+            element.textContent = originalText;
+            element.style.color = '';
+          }
+        }, 1500);
+      } catch (fallbackErr) {
+        console.error('Fallback copy failed:', fallbackErr);
+      }
+    }
+  };
+
   const activeFiltersCount = [educationFilter, occupationFilter, incomeFilter].filter(f => f).length;
 
   // Pagination logic
@@ -177,6 +257,13 @@ const Browse = () => {
   const indexOfFirstProfile = indexOfLastProfile - profilesPerPage;
   const currentProfiles = filteredProfiles.slice(indexOfFirstProfile, indexOfLastProfile);
   const totalPages = Math.ceil(filteredProfiles.length / profilesPerPage);
+
+  // Reset to page 1 if current page is greater than total pages
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -257,13 +344,6 @@ const Browse = () => {
               >
                 <span className="link-icon">🕊️</span>
                 <span className="link-text">{t('widower')}</span>
-              </Link>
-              <Link
-                to="/browse"
-                className={`quick-link ${genderFilter === '' ? 'active' : ''} ${language === 'mr' ? 'marathi-text' : ''}`}
-              >
-                <span className="link-icon">👥</span>
-                <span className="link-text">{t('all')}</span>
               </Link>
             </div>
 
@@ -411,17 +491,28 @@ const Browse = () => {
               {currentProfiles.map(profile => (
               <div key={profile.id} className="profile-card card">
                 <div className="card-top-section">
-                  <div className="register-id-badge">{profile.register_id}</div>
+                  <span 
+                    className="register-id-badge"
+                    onClick={(e) => copyRegistrationNumber(profile.register_id, e)}
+                    title={language === 'en' ? 'Click to copy registration number' : 'नोंदणी क्रमांक कॉपी करण्यासाठी क्लिक करा'}
+                  >
+                    {profile.register_id}
+                  </span>
                   <Link 
                     to={`/profile/${profile.id}`} 
                     className="btn-view-profile"
+                    onClick={saveNavigationState}
                   >
                     {language === 'en' ? 'View Profile' : 'प्रोफाइल पहा'}
                   </Link>
                 </div>
 
                 <div className="card-content">
-                  <div className="profile-image-wrapper">
+                  <Link 
+                    to={`/profile/${profile.id}`}
+                    onClick={saveNavigationState}
+                    className="profile-image-wrapper"
+                  >
                     <div className="profile-image">
                       {profile.photos && profile.photos.length > 0 ? (
                         <>
@@ -441,7 +532,7 @@ const Browse = () => {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="profile-info">
                     <h3 className="profile-name">{profile.full_name}</h3>
@@ -450,7 +541,7 @@ const Browse = () => {
                       {profile.date_of_birth && (
                         <div className="detail-row">
                           <span className="detail-label">{language === 'en' ? 'Birth Date' : 'जन्मतारीख'}:</span>
-                          <span className="detail-value">{formatDate(profile.date_of_birth)} ({calculateAge(profile.date_of_birth)} {language === 'en' ? 'years' : 'वर्षे'})</span>
+                          <span className="detail-value">{formatDate(profile.date_of_birth)}</span>
                         </div>
                       )}
                       
