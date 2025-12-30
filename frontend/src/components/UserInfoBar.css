@@ -1,0 +1,75 @@
+.user-info-bar {
+  position: fixed;
+  top: 70px; /* Below navbar */
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #dee2e6;
+  padding: 8px 0;
+  z-index: 999;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.user-info-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-info-text {
+  color: #495057;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+}
+
+.user-info-text strong {
+  color: #212529;
+  font-weight: 600;
+}
+
+.user-info-logout-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
+  white-space: nowrap;
+}
+
+.user-info-logout-btn:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
+}
+
+@media (max-width: 768px) {
+  .user-info-bar {
+    top: 60px;
+    padding: 6px 0;
+  }
+
+  .user-info-content {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .user-info-text {
+    font-size: 12px;
+  }
+
+  .user-info-logout-btn {
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+

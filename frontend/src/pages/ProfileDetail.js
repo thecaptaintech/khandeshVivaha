@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
-import { getUserById, UPLOADS_URL } from '../services/api';
+import { getUserById, UPLOADS_URL, getPublicSettings } from '../services/api';
 import './ProfileDetail.css';
 
 const ProfileDetail = () => {
@@ -11,11 +11,28 @@ const ProfileDetail = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const [settings, setSettings] = useState({
+    contact_whatsapp: '9167681454',
+    contact_email: 'info@khandeshmatrimony.com'
+  });
 
   useEffect(() => {
     fetchProfile();
+    fetchSettings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  const fetchSettings = async () => {
+    try {
+      const fetchedSettings = await getPublicSettings();
+      setSettings({
+        contact_whatsapp: fetchedSettings.contact_whatsapp || '9167681454',
+        contact_email: fetchedSettings.contact_email || 'info@khandeshmatrimony.com'
+      });
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -48,6 +65,49 @@ const ProfileDetail = () => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
+  };
+
+  const copyRegisterId = async (registerId) => {
+    try {
+      await navigator.clipboard.writeText(registerId);
+      // Show temporary feedback
+      const element = document.getElementById('register-id-copy-btn');
+      if (element) {
+        const originalHTML = element.innerHTML;
+        element.innerHTML = language === 'en' ? '✓ Copied!' : '✓ कॉपी झाले!';
+        element.style.color = '#4ade80';
+        setTimeout(() => {
+          element.innerHTML = originalHTML;
+          element.style.color = '';
+        }, 2000);
+      }
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = registerId;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        const element = document.getElementById('register-id-copy-btn');
+        if (element) {
+          const originalHTML = element.innerHTML;
+          element.innerHTML = language === 'en' ? '✓ Copied!' : '✓ कॉपी झाले!';
+          element.style.color = '#4ade80';
+          setTimeout(() => {
+            element.innerHTML = originalHTML;
+            element.style.color = '';
+          }, 2000);
+        }
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   const nextPhoto = () => {
@@ -151,7 +211,17 @@ const ProfileDetail = () => {
 
             <div className="profile-basic-info">
               <h1 className="profile-detail-name">{profile.full_name}</h1>
-              <p className="profile-id">ID: {profile.register_id}</p>
+              <div className="profile-id-container">
+                <p className="profile-id">ID: {profile.register_id}</p>
+                <button
+                  id="register-id-copy-btn"
+                  className="copy-btn"
+                  onClick={() => copyRegisterId(profile.register_id)}
+                  title={language === 'en' ? 'Copy registration ID' : 'नोंदणी ID कॉपी करा'}
+                >
+                  📋
+                </button>
+              </div>
               
               <div className="info-grid">
                 <div className="info-item">
@@ -525,8 +595,8 @@ const ProfileDetail = () => {
                         : 'आधीच नोंदणी केली आहे? तुमच्या नोंदणीकृत ईमेल किंवा WhatsApp वरून तुमचा KM आयडी आणि आवश्यक प्रोफाइल्सचे KM आयडी आम्हाला पाठवा.'}
                     </p>
                     <div className="locked-contact-chips">
-                      <span className="contact-chip">📧 info@khandeshmatrimony.com</span>
-                      <span className="contact-chip">📱 WhatsApp: 9167681454</span>
+                      <span className="contact-chip">📧 {settings.contact_email}</span>
+                      <span className="contact-chip">📱 WhatsApp: {settings.contact_whatsapp}</span>
                     </div>
                   </div>
                 </div>

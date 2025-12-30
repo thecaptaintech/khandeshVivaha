@@ -259,7 +259,7 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('en'); // Default to English
+  const [language, setLanguage] = useState('mr'); // Default to English
 
   const t = (key) => {
     return translations[language][key] || key;

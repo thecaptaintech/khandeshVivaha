@@ -176,10 +176,43 @@
   color: var(--text-dark);
 }
 
+.profile-id-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
 .profile-id {
   font-size: 16px;
   color: var(--text-light);
   font-weight: 600;
+  margin: 0;
+}
+
+.copy-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+}
+
+.copy-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: scale(1.05);
+}
+
+.copy-btn:active {
+  transform: scale(0.95);
 }
 
 .info-grid {
@@ -429,6 +462,13 @@
     font-size: 14px;
   }
 
+  .copy-btn {
+    font-size: 12px;
+    padding: 3px 6px;
+    min-width: 28px;
+    height: 24px;
+  }
+
   .info-grid {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -582,6 +622,13 @@
 
   .profile-id {
     font-size: 12px;
+  }
+
+  .copy-btn {
+    font-size: 11px;
+    padding: 2px 5px;
+    min-width: 24px;
+    height: 22px;
   }
 
   /* Keep info items on same line even on very small screens */

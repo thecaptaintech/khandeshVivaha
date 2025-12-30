@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { getPublicSettings } from '../services/api';
 import './Footer.css';
 
 const Footer = () => {
   const { t } = useLanguage();
+  const [settings, setSettings] = useState({
+    contact_whatsapp: '9167681454',
+    contact_email: 'info@khandeshmatrimony.com'
+  });
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const fetchedSettings = await getPublicSettings();
+      setSettings({
+        contact_whatsapp: fetchedSettings.contact_whatsapp || '9167681454',
+        contact_email: fetchedSettings.contact_email || 'info@khandeshmatrimony.com'
+      });
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
 
   return (
     <footer className="footer">
@@ -31,8 +52,8 @@ const Footer = () => {
           <div className="footer-section">
             <h3 className="footer-title">{t('footerContact')}</h3>
             <div className="footer-contact">
-              <p><strong>{t('footerPhone')}:</strong> +91 9167681454</p>
-              <p><strong>{t('footerEmail')}:</strong> info@khandeshmatrimony.com</p>
+              <p><strong>{t('footerPhone')}:</strong> +91 {settings.contact_whatsapp}</p>
+              <p><strong>{t('footerEmail')}:</strong> {settings.contact_email}</p>
             </div>
           </div>
         </div>

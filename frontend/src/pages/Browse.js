@@ -200,50 +200,51 @@ const Browse = () => {
 
   // Copy registration number to clipboard
   const copyRegistrationNumber = async (registerId, e) => {
-    if (!e || !e.currentTarget) {
-      return;
+    if (e) {
+      e.stopPropagation(); // Prevent any parent click events
+      e.preventDefault(); // Prevent default behavior
     }
     
-    e.stopPropagation(); // Prevent any parent click events
-    e.preventDefault(); // Prevent default behavior
-    
-    const element = e.currentTarget;
-    if (!element) {
-      return;
-    }
-    
-    const originalText = element.textContent || registerId;
+    const button = e?.currentTarget;
+    const originalHTML = button?.innerHTML || '📋';
     
     try {
       await navigator.clipboard.writeText(registerId);
-      // Show feedback
-      element.textContent = language === 'en' ? '✓ Copied!' : '✓ कॉपी झाले!';
-      element.style.color = '#4ade80';
-      setTimeout(() => {
-        if (element) {
-          element.textContent = originalText;
-          element.style.color = '';
-        }
-      }, 1500);
+      // Show feedback on button
+      if (button) {
+        button.innerHTML = '✓';
+        button.style.color = '#4ade80';
+        button.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+          button.innerHTML = originalHTML;
+          button.style.color = '';
+          button.style.transform = '';
+        }, 1500);
+      }
     } catch (err) {
       console.error('Failed to copy:', err);
       // Fallback for older browsers
       try {
         const textArea = document.createElement('textarea');
         textArea.value = registerId;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
         // Show feedback
-        element.textContent = language === 'en' ? '✓ Copied!' : '✓ कॉपी झाले!';
-        element.style.color = '#4ade80';
-        setTimeout(() => {
-          if (element) {
-            element.textContent = originalText;
-            element.style.color = '';
-          }
-        }, 1500);
+        if (button) {
+          button.innerHTML = '✓';
+          button.style.color = '#4ade80';
+          button.style.transform = 'scale(1.2)';
+          setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.style.color = '';
+            button.style.transform = '';
+          }, 1500);
+        }
       } catch (fallbackErr) {
         console.error('Fallback copy failed:', fallbackErr);
       }
@@ -491,13 +492,22 @@ const Browse = () => {
               {currentProfiles.map(profile => (
               <div key={profile.id} className="profile-card card">
                 <div className="card-top-section">
-                  <span 
-                    className="register-id-badge"
-                    onClick={(e) => copyRegistrationNumber(profile.register_id, e)}
-                    title={language === 'en' ? 'Click to copy registration number' : 'नोंदणी क्रमांक कॉपी करण्यासाठी क्लिक करा'}
-                  >
-                    {profile.register_id}
-                  </span>
+                  <div className="register-id-container">
+                    <span 
+                      className="register-id-badge"
+                      title={profile.register_id}
+                    >
+                      {profile.register_id}
+                    </span>
+                    <button
+                      className="copy-btn-small"
+                      onClick={(e) => copyRegistrationNumber(profile.register_id, e)}
+                      title={language === 'en' ? 'Copy registration number' : 'नोंदणी क्रमांक कॉपी करा'}
+                      data-register-id={profile.register_id}
+                    >
+                      📋
+                    </button>
+                  </div>
                   <Link 
                     to={`/profile/${profile.id}`} 
                     className="btn-view-profile"

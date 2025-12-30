@@ -834,25 +834,46 @@
   align-items: center;
 }
 
+.register-id-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .register-id-badge {
   font-size: 16px;
   font-weight: 900;
   color: white;
   font-family: 'Poppins', monospace;
   letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.2s ease;
   user-select: none;
   display: inline-block;
 }
 
-.register-id-badge:hover {
-  opacity: 0.8;
-  transform: scale(1.05);
+.copy-btn-small {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  padding: 4px 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  color: white;
 }
 
-.register-id-badge:active {
-  transform: scale(0.98);
+.copy-btn-small:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.copy-btn-small:active {
+  transform: scale(0.95);
 }
 
 .card-content {
@@ -1200,6 +1221,13 @@
     font-weight: 900;
   }
 
+  .copy-btn-small {
+    font-size: 11px;
+    padding: 3px 5px;
+    min-width: 22px;
+    height: 20px;
+  }
+
   .detail-row {
     font-size: 12px;
     padding: 5px 10px;
@@ -1286,6 +1314,13 @@
   .register-id-badge {
     font-size: 13px;
     font-weight: 900;
+  }
+
+  .copy-btn-small {
+    font-size: 10px;
+    padding: 2px 4px;
+    min-width: 20px;
+    height: 18px;
   }
 
   .detail-row {

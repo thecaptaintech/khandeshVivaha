@@ -9,9 +9,18 @@
   margin-top: 80px;
 }
 
+/* Adjust margin when user info bar is visible */
+body:has(.user-info-bar) .main-content {
+  margin-top: 110px;
+}
+
 @media (max-width: 768px) {
   .main-content {
     margin-top: 70px;
+  }
+
+  body:has(.user-info-bar) .main-content {
+    margin-top: 100px;
   }
 }
 

@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-// Admin Login
+// Admin/Agent Login
 router.post('/admin/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -20,14 +20,23 @@ router.post('/admin/login', async (req, res) => {
         }
 
         const admin = admins[0];
+        
+        // Check if user is blocked
+        if (admin.status === 'blocked') {
+            return res.status(403).json({ message: 'Your account has been blocked. Please contact administrator.' });
+        }
+
         const isPasswordValid = await bcrypt.compare(password, admin.password);
 
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
+        // Ensure role is set (default to 'admin' if null for existing records)
+        const userRole = admin.role || (admin.username === 'admin' ? 'admin' : 'agent');
+        
         const token = jwt.sign(
-            { id: admin.id, username: admin.username },
+            { id: admin.id, username: admin.username, role: userRole },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -38,7 +47,9 @@ router.post('/admin/login', async (req, res) => {
             admin: {
                 id: admin.id,
                 username: admin.username,
-                email: admin.email
+                email: admin.email,
+                role: userRole,
+                status: admin.status || 'active'
             }
         });
     } catch (error) {
