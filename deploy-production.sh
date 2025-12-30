@@ -3,16 +3,36 @@
 # ============================================
 # Production Deployment Script
 # ============================================
+# Can run from local machine OR on VPS itself
 # VPS: root@77.37.44.226
 # Domain: khandeshmatrimony.com
 # ============================================
 
 set -e
 
+# Detect if running on VPS or local
+if [ -f "/root/khandeshvivah/backend/server.js" ] || [ -f "/var/www/khandeshVivaha/backend/server.js" ] || [ -f "$(pwd)/backend/server.js" ]; then
+    # Running on VPS - detect project directory
+    IS_VPS=true
+    if [ -d "/root/khandeshvivah" ]; then
+        PROJECT_DIR="/root/khandeshvivah"
+    elif [ -d "/var/www/khandeshVivaha" ]; then
+        PROJECT_DIR="/var/www/khandeshVivaha"
+    elif [ -f "$(pwd)/backend/server.js" ]; then
+        PROJECT_DIR="$(pwd)"
+    else
+        PROJECT_DIR="/var/www/khandeshVivaha"
+    fi
+    VPS=""
+else
+    # Running from local machine
+    IS_VPS=false
+    VPS="root@77.37.44.226"
+    PROJECT_DIR="/root/khandeshvivah"
+fi
+
 # Configuration
-VPS="root@77.37.44.226"
 DOMAIN="khandeshmatrimony.com"
-PROJECT_DIR="/root/khandeshvivah"
 BACKEND_DIR="${PROJECT_DIR}/backend"
 WEB_ROOT="/var/www/${DOMAIN}"
 PM2_APP="khandesh-api"
@@ -32,15 +52,31 @@ print_error() { echo -e "${RED}❌ $1${NC}"; }
 print_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
 print_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
 
-# Load DB credentials from local .env
+# Load DB credentials from .env
 load_db_credentials() {
-    if [ -f "backend/.env" ]; then
-        print_info "Loading credentials from backend/.env..."
-        export DB_HOST=$(grep "^DB_HOST=" backend/.env | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
-        export DB_USER=$(grep "^DB_USER=" backend/.env | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
-        export DB_PASSWORD=$(grep "^DB_PASSWORD=" backend/.env | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
-        export DB_NAME=$(grep "^DB_NAME=" backend/.env | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
-        export JWT_SECRET=$(grep "^JWT_SECRET=" backend/.env | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
+    # Try different .env locations
+    ENV_FILE=""
+    if [ "$IS_VPS" = true ]; then
+        # On VPS, check in project directory
+        if [ -f "${BACKEND_DIR}/.env" ]; then
+            ENV_FILE="${BACKEND_DIR}/.env"
+        elif [ -f "backend/.env" ]; then
+            ENV_FILE="backend/.env"
+        fi
+    else
+        # On local machine
+        if [ -f "backend/.env" ]; then
+            ENV_FILE="backend/.env"
+        fi
+    fi
+    
+    if [ -n "$ENV_FILE" ] && [ -f "$ENV_FILE" ]; then
+        print_info "Loading credentials from ${ENV_FILE}..."
+        export DB_HOST=$(grep "^DB_HOST=" "$ENV_FILE" | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
+        export DB_USER=$(grep "^DB_USER=" "$ENV_FILE" | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
+        export DB_PASSWORD=$(grep "^DB_PASSWORD=" "$ENV_FILE" | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
+        export DB_NAME=$(grep "^DB_NAME=" "$ENV_FILE" | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
+        export JWT_SECRET=$(grep "^JWT_SECRET=" "$ENV_FILE" | cut -d '=' -f2 | tr -d '"' | tr -d "'" | xargs)
         
         DB_HOST=${DB_HOST:-localhost}
         DB_USER=${DB_USER:-root}
@@ -52,13 +88,19 @@ load_db_credentials() {
             print_warning "Some credentials missing, will prompt"
         fi
     else
-        print_error "backend/.env file not found!"
+        print_error ".env file not found in backend directory!"
+        print_info "Please create ${BACKEND_DIR}/.env with database credentials"
         exit 1
     fi
 }
 
-# Check SSH
+# Check SSH (only if running from local)
 check_ssh() {
+    if [ "$IS_VPS" = true ]; then
+        print_info "Running on VPS - skipping SSH check"
+        return 0
+    fi
+    
     print_info "Checking SSH connection..."
     if ssh -o ConnectTimeout=5 ${VPS} exit 2>/dev/null; then
         print_success "SSH OK"
@@ -75,16 +117,44 @@ setup_database() {
     
     load_db_credentials
     
-    print_info "Uploading database script..."
-    scp backend/setup_database.sql ${VPS}:/tmp/setup_database.sql
-    
-    if [ -z "$DB_PASSWORD" ]; then
-        read -sp "MySQL Password: " DB_PASSWORD
-        echo ""
+    # Find SQL file
+    SQL_FILE=""
+    if [ "$IS_VPS" = true ]; then
+        if [ -f "${BACKEND_DIR}/setup_database.sql" ]; then
+            SQL_FILE="${BACKEND_DIR}/setup_database.sql"
+        elif [ -f "backend/setup_database.sql" ]; then
+            SQL_FILE="backend/setup_database.sql"
+        fi
+    else
+        SQL_FILE="backend/setup_database.sql"
     fi
     
-    print_info "Creating database and tables..."
-    ssh ${VPS} "mysql -h ${DB_HOST} -u ${DB_USER} -p'${DB_PASSWORD}' < /tmp/setup_database.sql && rm /tmp/setup_database.sql"
+    if [ -z "$SQL_FILE" ] || [ ! -f "$SQL_FILE" ]; then
+        print_error "setup_database.sql not found!"
+        exit 1
+    fi
+    
+    if [ "$IS_VPS" = true ]; then
+        # Running on VPS - execute directly
+        print_info "Creating database and tables..."
+        if [ -z "$DB_PASSWORD" ]; then
+            read -sp "MySQL Password: " DB_PASSWORD
+            echo ""
+        fi
+        mysql -h ${DB_HOST} -u ${DB_USER} -p${DB_PASSWORD} < "$SQL_FILE"
+    else
+        # Running from local - upload and execute via SSH
+        print_info "Uploading database script..."
+        scp "$SQL_FILE" ${VPS}:/tmp/setup_database.sql
+        
+        if [ -z "$DB_PASSWORD" ]; then
+            read -sp "MySQL Password: " DB_PASSWORD
+            echo ""
+        fi
+        
+        print_info "Creating database and tables..."
+        ssh ${VPS} "mysql -h ${DB_HOST} -u ${DB_USER} -p'${DB_PASSWORD}' < /tmp/setup_database.sql && rm /tmp/setup_database.sql"
+    fi
     
     if [ $? -eq 0 ]; then
         print_success "Database setup completed"
@@ -94,8 +164,14 @@ setup_database() {
     fi
 }
 
-# Upload Files
+# Upload Files (only if running from local)
 upload_files() {
+    if [ "$IS_VPS" = true ]; then
+        print_info "Running on VPS - files already here, skipping upload"
+        mkdir -p ${WEB_ROOT}
+        return 0
+    fi
+    
     print_header "UPLOADING FILES"
     
     ssh ${VPS} "mkdir -p ${PROJECT_DIR} ${WEB_ROOT}"
@@ -127,7 +203,48 @@ setup_backend() {
         echo ""
     fi
     
-    ssh ${VPS} << ENDSSH
+    if [ "$IS_VPS" = true ]; then
+        # Running on VPS - execute directly
+        cd ${BACKEND_DIR}
+        
+        cat > .env << ENVFILE
+NODE_ENV=production
+PORT=${BACKEND_PORT}
+DB_HOST=${DB_HOST}
+DB_USER=${DB_USER}
+DB_PASSWORD=${DB_PASSWORD}
+DB_NAME=${DB_NAME}
+JWT_SECRET=${JWT_SECRET}
+FRONTEND_URL=https://${DOMAIN}
+ENVFILE
+        
+        chmod 600 .env
+        
+        # Install Node.js if needed
+        if ! command -v node &> /dev/null; then
+            curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+            apt-get install -y nodejs
+        fi
+        
+        # Install PM2 if needed
+        if ! command -v pm2 &> /dev/null; then
+            npm install -g pm2
+        fi
+        
+        # Install dependencies
+        npm install --production
+        
+        # Stop and start backend
+        pm2 stop ${PM2_APP} 2>/dev/null || true
+        pm2 delete ${PM2_APP} 2>/dev/null || true
+        pm2 start server.js --name ${PM2_APP}
+        pm2 save
+        pm2 startup systemd -u root --hp /root | grep -v PM2 | tail -1 | bash || true
+        
+        cd - > /dev/null
+    else
+        # Running from local - execute via SSH
+        ssh ${VPS} << ENDSSH
 cd ${BACKEND_DIR}
 
 cat > .env << ENVFILE
@@ -166,6 +283,7 @@ pm2 startup systemd -u root --hp /root | grep -v PM2 | tail -1 | bash || true
 
 echo "✅ Backend started"
 ENDSSH
+    fi
     
     print_success "Backend setup completed"
 }
@@ -174,25 +292,56 @@ ENDSSH
 setup_frontend() {
     print_header "SETTING UP FRONTEND"
     
-    print_info "Building frontend..."
-    cd frontend
-    
-    if [ ! -f ".env" ]; then
-        echo "REACT_APP_API_URL=https://${DOMAIN}/api" > .env
+    if [ "$IS_VPS" = true ]; then
+        # On VPS - build locally
+        FRONTEND_DIR="${PROJECT_DIR}/frontend"
+        if [ ! -d "$FRONTEND_DIR" ]; then
+            FRONTEND_DIR="frontend"
+        fi
+        
+        cd "$FRONTEND_DIR"
+        
+        if [ ! -f ".env" ]; then
+            echo "REACT_APP_API_URL=https://${DOMAIN}/api" > .env
+        fi
+        
+        print_info "Installing dependencies..."
+        npm install
+        
+        print_info "Building frontend..."
+        npm run build
+        
+        if [ ! -d "build" ]; then
+            print_error "Build failed"
+            exit 1
+        fi
+        
+        print_info "Copying build to web root..."
+        cp -r build/* ${WEB_ROOT}/
+        
+        cd - > /dev/null
+    else
+        # From local - build and upload
+        print_info "Building frontend..."
+        cd frontend
+        
+        if [ ! -f ".env" ]; then
+            echo "REACT_APP_API_URL=https://${DOMAIN}/api" > .env
+        fi
+        
+        npm install
+        npm run build
+        
+        if [ ! -d "build" ]; then
+            print_error "Build failed"
+            exit 1
+        fi
+        
+        cd ..
+        
+        print_info "Uploading frontend..."
+        rsync -avz --delete frontend/build/ ${VPS}:${WEB_ROOT}/
     fi
-    
-    npm install
-    npm run build
-    
-    if [ ! -d "build" ]; then
-        print_error "Build failed"
-        exit 1
-    fi
-    
-    cd ..
-    
-    print_info "Uploading frontend..."
-    rsync -avz --delete frontend/build/ ${VPS}:${WEB_ROOT}/
     
     print_success "Frontend deployed"
 }
@@ -201,12 +350,11 @@ setup_frontend() {
 setup_nginx() {
     print_header "SETTING UP NGINX"
     
-    ssh ${VPS} << ENDSSH
-cat > /etc/nginx/sites-available/${DOMAIN} << NGINXCONF
+    NGINX_CMD="cat > /etc/nginx/sites-available/${DOMAIN} << 'NGINXCONF'
 server {
     listen 80;
     server_name ${DOMAIN} www.${DOMAIN};
-    return 301 https://\$server_name\$request_uri;
+    return 301 https://\\\$server_name\\\$request_uri;
 }
 
 server {
@@ -217,19 +365,19 @@ server {
     index index.html;
 
     location / {
-        try_files \$uri \$uri/ /index.html;
+        try_files \\\$uri \\\$uri/ /index.html;
     }
 
     location /api {
         proxy_pass http://localhost:${BACKEND_PORT};
         proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Upgrade \\\$http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_cache_bypass \$http_upgrade;
+        proxy_set_header Host \\\$host;
+        proxy_set_header X-Real-IP \\\$remote_addr;
+        proxy_set_header X-Forwarded-For \\\$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \\\$scheme;
+        proxy_cache_bypass \\\$http_upgrade;
     }
 
     location /uploads {
@@ -242,8 +390,15 @@ ln -sf /etc/nginx/sites-available/${DOMAIN} /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
 
-echo "✅ Nginx configured"
-ENDSSH
+echo '✅ Nginx configured'"
+    
+    if [ "$IS_VPS" = true ]; then
+        # Running on VPS - execute directly
+        eval "$NGINX_CMD"
+    else
+        # Running from local - execute via SSH
+        ssh ${VPS} "$NGINX_CMD"
+    fi
     
     print_success "Nginx configured"
 }
@@ -251,7 +406,13 @@ ENDSSH
 # Main
 main() {
     print_header "PRODUCTION DEPLOYMENT"
-    print_info "VPS: ${VPS}"
+    
+    if [ "$IS_VPS" = true ]; then
+        print_info "Running on VPS: $(hostname)"
+        print_info "Project: ${PROJECT_DIR}"
+    else
+        print_info "VPS: ${VPS}"
+    fi
     print_info "Domain: ${DOMAIN}"
     echo ""
     
@@ -272,8 +433,14 @@ main() {
     
     print_header "DEPLOYMENT COMPLETE"
     print_success "Visit: https://${DOMAIN}"
-    print_info "PM2 Status: ssh ${VPS} 'pm2 list'"
-    print_info "Backend Logs: ssh ${VPS} 'pm2 logs ${PM2_APP}'"
+    
+    if [ "$IS_VPS" = true ]; then
+        print_info "PM2 Status: pm2 list"
+        print_info "Backend Logs: pm2 logs ${PM2_APP}"
+    else
+        print_info "PM2 Status: ssh ${VPS} 'pm2 list'"
+        print_info "Backend Logs: ssh ${VPS} 'pm2 logs ${PM2_APP}'"
+    fi
 }
 
 main "$@"
