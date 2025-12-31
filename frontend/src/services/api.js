@@ -7,12 +7,17 @@ const getApiUrl = () => {
     return process.env.REACT_APP_API_URL;
   }
   
-  // Check if we're in production build (not just NODE_ENV, but actual production)
-  // In production (when served via Nginx), always use relative path
-  // This avoids CORS issues and works with the Nginx proxy
-  const isProduction = window.location.hostname !== 'localhost' && 
-                       window.location.hostname !== '127.0.0.1';
+  // Check if we're in production (when served via Nginx)
+  // Use window.location to detect production environment
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  const isProduction = hostname !== 'localhost' && 
+                       hostname !== '127.0.0.1' &&
+                       !hostname.startsWith('192.168.') &&
+                       !hostname.startsWith('10.') &&
+                       protocol === 'https:';
   
+  // In production, always use relative path (works with Nginx proxy)
   if (isProduction) {
     return '/api';
   }
@@ -26,8 +31,13 @@ const getUploadsUrl = () => {
     return process.env.REACT_APP_API_URL.replace('/api', '/uploads');
   }
   
-  const isProduction = window.location.hostname !== 'localhost' && 
-                       window.location.hostname !== '127.0.0.1';
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  const isProduction = hostname !== 'localhost' && 
+                       hostname !== '127.0.0.1' &&
+                       !hostname.startsWith('192.168.') &&
+                       !hostname.startsWith('10.') &&
+                       protocol === 'https:';
   
   if (isProduction) {
     return '/uploads';
@@ -36,8 +46,17 @@ const getUploadsUrl = () => {
   return 'http://localhost:5001/uploads';
 };
 
+// Get API URL - this runs at module load time
 const API_URL = getApiUrl();
 export const UPLOADS_URL = getUploadsUrl();
+
+// Debug logging (only in development)
+if (process.env.NODE_ENV === 'development') {
+  console.log('API_URL:', API_URL);
+  console.log('UPLOADS_URL:', UPLOADS_URL);
+  console.log('Hostname:', window.location.hostname);
+  console.log('Protocol:', window.location.protocol);
+}
 
 const api = axios.create({
   baseURL: API_URL,
