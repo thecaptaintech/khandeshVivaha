@@ -100,7 +100,7 @@ const AdminLogin = () => {
 
           <div className="login-footer">
             <p className="login-note">
-              Default credentials: admin / admin123
+              Please contact administrator for access
             </p>
           </div>
         </div>
