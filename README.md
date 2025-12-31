@@ -4,8 +4,22 @@
 
 ```bash
 cd /var/www/khandeshVivaha
-sudo ./deploy.sh
+sudo ./Production-deploy.sh
 ```
+
+## 📋 Production Scripts
+
+All production scripts are prefixed with `Production-`:
+
+- **Production-deploy.sh** - Full deployment
+- **Production-status.sh** - System status check
+- **Production-logs.sh** - View logs
+- **Production-db-check.sh** - Database connection test
+- **Production-restart.sh** - Restart services
+- **Production-backup.sh** - Database backup
+- **Production-monitor.sh** - Real-time monitoring
+
+See [PRODUCTION_GUIDE.md](./PRODUCTION_GUIDE.md) for detailed documentation.
 
 ## 📋 Essential Commands
 
