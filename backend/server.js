@@ -22,18 +22,30 @@ app.use(cors({
             'http://localhost:3000',
             'http://localhost:3001',
             'http://127.0.0.1:3000',
-            'http://127.0.0.1:3001'
-        ];
+            'http://127.0.0.1:3001',
+            'https://khandeshmatrimony.com',
+            'https://www.khandeshmatrimony.com',
+            process.env.FRONTEND_URL
+        ].filter(Boolean); // Remove undefined values
         
-        if (allowedOrigins.indexOf(origin) !== -1 || process.env.FRONTEND_URL) {
+        // Allow if in allowed list or if FRONTEND_URL matches
+        if (allowedOrigins.some(allowed => origin === allowed || origin.startsWith(allowed))) {
             callback(null, true);
         } else {
-            callback(null, true); // Allow all for now
+            // In production, be more strict
+            if (process.env.NODE_ENV === 'production') {
+                // Still allow for now, but log it
+                console.log('⚠️  CORS: Allowing origin:', origin);
+                callback(null, true);
+            } else {
+                callback(null, true);
+            }
         }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range']
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
