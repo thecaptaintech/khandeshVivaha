@@ -2,14 +2,18 @@ import axios from 'axios';
 
 // Use environment variable or detect production vs development
 const getApiUrl = () => {
-  // If REACT_APP_API_URL is set, use it
+  // If REACT_APP_API_URL is explicitly set, use it
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL;
   }
   
-  // In production (when served via Nginx), use relative path
+  // Check if we're in production build (not just NODE_ENV, but actual production)
+  // In production (when served via Nginx), always use relative path
   // This avoids CORS issues and works with the Nginx proxy
-  if (process.env.NODE_ENV === 'production') {
+  const isProduction = window.location.hostname !== 'localhost' && 
+                       window.location.hostname !== '127.0.0.1';
+  
+  if (isProduction) {
     return '/api';
   }
   
@@ -17,9 +21,23 @@ const getApiUrl = () => {
   return 'http://localhost:5001/api';
 };
 
+const getUploadsUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL.replace('/api', '/uploads');
+  }
+  
+  const isProduction = window.location.hostname !== 'localhost' && 
+                       window.location.hostname !== '127.0.0.1';
+  
+  if (isProduction) {
+    return '/uploads';
+  }
+  
+  return 'http://localhost:5001/uploads';
+};
+
 const API_URL = getApiUrl();
-export const UPLOADS_URL = process.env.REACT_APP_API_URL?.replace('/api', '/uploads') || 
-  (process.env.NODE_ENV === 'production' ? '/uploads' : 'http://localhost:5001/uploads');
+export const UPLOADS_URL = getUploadsUrl();
 
 const api = axios.create({
   baseURL: API_URL,
