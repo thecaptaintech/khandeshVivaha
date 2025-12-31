@@ -25,6 +25,8 @@ app.use(cors({
             'http://127.0.0.1:3001',
             'https://khandeshmatrimony.com',
             'https://www.khandeshmatrimony.com',
+            'http://khandeshmatrimony.com',
+            'http://www.khandeshmatrimony.com',
             process.env.FRONTEND_URL
         ].filter(Boolean); // Remove undefined values
         
