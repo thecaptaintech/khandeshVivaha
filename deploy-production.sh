@@ -358,7 +358,8 @@ server {
 }
 
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name ${DOMAIN} www.${DOMAIN};
 
     root ${WEB_ROOT};
