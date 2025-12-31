@@ -26,11 +26,29 @@ DOMAIN="khandeshmatrimony.com"
 VPS_IP="77.37.44.226"
 BACKEND_PORT="5001"
 FRONTEND_PORT="3001"
-PROJECT_DIR="/var/www/khandeshVivaha"
+
+# Detect project directory
+if [ -d "/var/www/khandeshVivaha" ]; then
+    PROJECT_DIR="/var/www/khandeshVivaha"
+elif [ -d "/root/khandeshvivah" ]; then
+    PROJECT_DIR="/root/khandeshvivah"
+else
+    PROJECT_DIR="$(pwd)"
+fi
+
 BACKEND_DIR="${PROJECT_DIR}/backend"
 FRONTEND_DIR="${PROJECT_DIR}/frontend"
+
+# WEB_ROOT is where Nginx serves the built frontend files
+# This is separate from your source code directory
+# Source code: /var/www/khandeshVivaha/ (your project)
+# Web root: /var/www/khandeshmatrimony.com/ (built frontend files)
 WEB_ROOT="/var/www/khandeshmatrimony.com"
 EMAIL="info@khandeshmatrimony.com"  # Change this to your email
+
+print_info "Detected project directory: ${PROJECT_DIR}"
+print_info "Source code: ${PROJECT_DIR}/"
+print_info "Web root (built files): ${WEB_ROOT}/"
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then 
@@ -385,6 +403,7 @@ print_success "============================================"
 print_success "✅ Deployment Summary"
 print_success "============================================"
 echo ""
+print_info "📂 Project Directory: ${PROJECT_DIR}"
 print_info "🌐 Domain: https://${DOMAIN}"
 print_info "🔧 Backend: http://localhost:${BACKEND_PORT}"
 print_info "📁 Frontend: ${WEB_ROOT}"
@@ -398,12 +417,14 @@ echo "  • Check Nginx: sudo nginx -t && sudo systemctl status nginx"
 echo "  • View Nginx logs: sudo tail -f /var/log/nginx/error.log"
 echo "  • Renew SSL: sudo certbot renew"
 echo "  • Test SSL: curl -I https://${DOMAIN}"
+echo "  • Test backend: curl http://localhost:${BACKEND_PORT}/api/health"
 echo ""
 print_warning "⚠️  Important:"
 echo "  1. Make sure .env file in ${BACKEND_DIR} has correct database credentials"
 echo "  2. Verify DNS records in Hostinger DNS Zone Editor"
 echo "  3. If SSL failed, run: sudo certbot --nginx -d ${DOMAIN} -d www.${DOMAIN}"
 echo "  4. Check backend logs if API is not working: pm2 logs khandesh-api"
+echo "  5. Project structure: ${PROJECT_DIR}/{backend,frontend}"
 echo ""
 print_success "============================================"
 print_success "🚀 Your site should be live at: https://${DOMAIN}"
