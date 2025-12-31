@@ -1,30 +1,19 @@
 import axios from 'axios';
 
-// Use environment variable or detect production vs development
-// IMPORTANT: This function is called at runtime, not build time
+// Runtime API URL detection - ALWAYS checks at request time
 const getApiUrl = () => {
-  // If REACT_APP_API_URL is explicitly set, use it
-  if (process.env.REACT_APP_API_URL) {
-    return process.env.REACT_APP_API_URL;
+  // Check if we're in browser (not SSR)
+  if (typeof window === 'undefined') {
+    return 'http://localhost:5001/api';
   }
   
-  // Runtime detection - check actual browser location
-  // This works even in production builds
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    const protocol = window.location.protocol;
-    
-    // Production detection: HTTPS protocol OR domain is not localhost/127.0.0.1
-    const isProduction = protocol === 'https:' || 
-                        (hostname !== 'localhost' && 
-                         hostname !== '127.0.0.1' &&
-                         !hostname.startsWith('192.168.') &&
-                         !hostname.startsWith('10.'));
-    
-    if (isProduction) {
-      // Use relative path - Nginx will proxy to backend
-      return '/api';
-    }
+  // Runtime detection based on actual browser location
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  
+  // Production: HTTPS OR not localhost
+  if (protocol === 'https:' || (hostname !== 'localhost' && hostname !== '127.0.0.1')) {
+    return '/api'; // Relative path - Nginx proxies to backend
   }
   
   // Development: use localhost
@@ -32,56 +21,46 @@ const getApiUrl = () => {
 };
 
 const getUploadsUrl = () => {
-  if (process.env.REACT_APP_API_URL) {
-    return process.env.REACT_APP_API_URL.replace('/api', '/uploads');
+  if (typeof window === 'undefined') {
+    return 'http://localhost:5001/uploads';
   }
   
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    const protocol = window.location.protocol;
-    
-    const isProduction = protocol === 'https:' || 
-                        (hostname !== 'localhost' && 
-                         hostname !== '127.0.0.1' &&
-                         !hostname.startsWith('192.168.') &&
-                         !hostname.startsWith('10.'));
-    
-    if (isProduction) {
-      return '/uploads';
-    }
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  
+  if (protocol === 'https:' || (hostname !== 'localhost' && hostname !== '127.0.0.1')) {
+    return '/uploads';
   }
   
   return 'http://localhost:5001/uploads';
 };
 
-// Create axios instance with dynamic baseURL
-// We'll set baseURL in the interceptor to ensure it's runtime-based
-const API_URL = getApiUrl();
-export const UPLOADS_URL = getUploadsUrl();
-
+// Create axios instance - baseURL will be set dynamically in interceptor
 const api = axios.create({
-  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add token to requests if available
-// This interceptor runs after baseURL is set
+// Request interceptor - ALWAYS sets baseURL at runtime
 api.interceptors.request.use((config) => {
-  // Set baseURL dynamically (runtime detection)
+  // Always get fresh URL based on current browser location
   config.baseURL = getApiUrl();
   
   const token = localStorage.getItem('adminToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  // Remove Content-Type header for FormData - let axios set it automatically with boundary
+  
+  // Remove Content-Type for FormData
   if (config.data instanceof FormData) {
     delete config.headers['Content-Type'];
   }
+  
   return config;
 });
+
+export const UPLOADS_URL = getUploadsUrl();
 
 // User APIs
 export const registerUser = async (formData) => {

@@ -44,6 +44,15 @@ rm -rf .next
 find . -name "*.map" -type f -delete 2>/dev/null || true
 print_success "Clean complete"
 
+# Verify API detection code is updated
+print_info "Verifying API detection code..."
+if grep -q "protocol === 'https:'" src/services/api.js; then
+    print_success "API detection code is correct"
+else
+    print_error "API detection code needs update!"
+    exit 1
+fi
+
 # Build
 print_info "Building frontend for production..."
 print_info "This will use relative paths (/api) in production..."
