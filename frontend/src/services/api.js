@@ -1,7 +1,25 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
-export const UPLOADS_URL = process.env.REACT_APP_API_URL?.replace('/api', '/uploads') || 'http://localhost:5001/uploads';
+// Use environment variable or detect production vs development
+const getApiUrl = () => {
+  // If REACT_APP_API_URL is set, use it
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // In production (when served via Nginx), use relative path
+  // This avoids CORS issues and works with the Nginx proxy
+  if (process.env.NODE_ENV === 'production') {
+    return '/api';
+  }
+  
+  // In development, use localhost
+  return 'http://localhost:5001/api';
+};
+
+const API_URL = getApiUrl();
+export const UPLOADS_URL = process.env.REACT_APP_API_URL?.replace('/api', '/uploads') || 
+  (process.env.NODE_ENV === 'production' ? '/uploads' : 'http://localhost:5001/uploads');
 
 const api = axios.create({
   baseURL: API_URL,
