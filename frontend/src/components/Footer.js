@@ -45,6 +45,7 @@ const Footer = () => {
               <Link to="/register" className="footer-link">{t('register')}</Link>
               <Link to="/browse" className="footer-link">{t('browse')}</Link>
               <Link to="/terms-and-conditions" className="footer-link">{t('termsAndConditions')}</Link>
+              <Link to="/sitemap" className="footer-link">{t('sitemap')}</Link>
               <Link to="/admin/login" className="footer-link">{t('adminLogin')}</Link>
             </div>
           </div>

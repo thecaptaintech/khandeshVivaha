@@ -124,6 +124,17 @@ export const translations = {
     footerDisclaimer: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
     topDisclaimer: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
     termsAndConditions: 'Terms & Conditions',
+    
+    // Sitemap
+    sitemap: 'Sitemap',
+    sitemapDescription: 'Complete list of all pages on our website',
+    mainPages: 'Main Pages',
+    xmlSitemap: 'XML Sitemap',
+    xmlSitemapForSearchEngines: 'XML Sitemap for search engines:',
+    homePage: 'Khandesh Matrimony Home Page',
+    registerForMarriage: 'Register for Marriage',
+    browseAllProfiles: 'Browse All Available Profiles',
+    websiteTerms: 'Website Terms and Conditions',
   },
   
   mr: {
@@ -247,6 +258,17 @@ export const translations = {
     footerDisclaimer: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.',
     topDisclaimer: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.',
     termsAndConditions: 'अटी व शर्ती',
+    
+    // Sitemap
+    sitemap: 'साइटमॅप',
+    sitemapDescription: 'आमच्या वेबसाइटवरील सर्व पृष्ठांची यादी',
+    mainPages: 'मुख्य पृष्ठे',
+    xmlSitemap: 'XML साइटमॅप',
+    xmlSitemapForSearchEngines: 'सर्च इंजिनसाठी XML साइटमॅप:',
+    homePage: 'खानदेश मॅट्रिमोनी मुख्यपृष्ठ',
+    registerForMarriage: 'विवाहासाठी नोंदणी करा',
+    browseAllProfiles: 'सर्व उपलब्ध प्रोफाइल पहा',
+    websiteTerms: 'वेबसाइटचे नियम आणि अटी',
   }
 };
 

@@ -1,0 +1,13 @@
+# robots.txt for khandeshmatrimony.com
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://www.khandeshmatrimony.com/sitemap.xml
+
+# Crawl-delay (optional)
+Crawl-delay: 1
+

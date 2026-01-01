@@ -83,6 +83,34 @@ cp -r build/* "$WEB_ROOT/"
 chown -R www-data:www-data "$WEB_ROOT"
 chmod -R 755 "$WEB_ROOT"
 
+# Verify favicon files are deployed
+print_info "Verifying favicon files..."
+FAVICON_FILES=(
+    "favicon.ico"
+    "favicon.svg"
+    "favicon-96x96.png"
+    "apple-touch-icon.png"
+    "web-app-manifest-192x192.png"
+    "web-app-manifest-512x512.png"
+    "site.webmanifest"
+)
+
+FAVICON_OK=0
+for file in "${FAVICON_FILES[@]}"; do
+    if [ -f "${WEB_ROOT}/${file}" ]; then
+        print_success "✓ ${file}"
+        FAVICON_OK=$((FAVICON_OK + 1))
+    else
+        print_warning "⚠ Missing: ${file}"
+    fi
+done
+
+if [ $FAVICON_OK -eq ${#FAVICON_FILES[@]} ]; then
+    print_success "All favicon files deployed"
+else
+    print_warning "Some favicon files are missing. Check build output."
+fi
+
 print_success "Frontend deployed"
 
 # Step 4: Reload Nginx

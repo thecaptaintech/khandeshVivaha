@@ -7,6 +7,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const sitemapRoutes = require('./routes/sitemapRoutes');
 const { startExpiryChecker } = require('./scheduler/expiryChecker');
 
 const app = express();
@@ -59,6 +60,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/', sitemapRoutes); // Sitemap route (serves /sitemap.xml)
 
 // Health check
 app.get('/api/health', (req, res) => {
