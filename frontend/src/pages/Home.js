@@ -9,9 +9,9 @@ const Home = () => {
   const { t, language } = useLanguage();
   const [settings, setSettings] = useState({
     payment_qr_code: null,
-    contact_whatsapp: '9167681454',
-    contact_email: 'info@khandeshmatrimony.com',
-    upi_id: '9167681454@ybl',
+    contact_whatsapp: '',
+    contact_email: '',
+    upi_id: '',
     registration_fee: '₹1500 (6 months)',
     banner_text_english: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
     banner_text_marathi: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.'
@@ -23,9 +23,9 @@ const Home = () => {
         const fetchedSettings = await getPublicSettings();
         setSettings({
           payment_qr_code: fetchedSettings.payment_qr_code || null,
-          contact_whatsapp: fetchedSettings.contact_whatsapp || '9167681454',
-          contact_email: fetchedSettings.contact_email || 'info@khandeshmatrimony.com',
-          upi_id: fetchedSettings.upi_id || '9167681454@ybl',
+          contact_whatsapp: fetchedSettings.contact_whatsapp || '',
+          contact_email: fetchedSettings.contact_email || '',
+          upi_id: fetchedSettings.upi_id || '',
           registration_fee: fetchedSettings.registration_fee || '₹1500 (6 months)',
           banner_text_english: fetchedSettings.banner_text_english || 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
           banner_text_marathi: fetchedSettings.banner_text_marathi || 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.'

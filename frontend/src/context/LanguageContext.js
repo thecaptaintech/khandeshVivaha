@@ -59,7 +59,7 @@ export const translations = {
     photosSelected: 'photos selected',
     submit: 'Submit',
     paymentInstructions: 'Payment Instructions',
-    paymentNote: 'Please send payment to UPI ID: 9167681454@ybl with your KM Register ID as reference.',
+    paymentNote: 'Please send payment to UPI ID: {upi_id} with your KM Register ID as reference.',
     contactAdmin: 'Contact info@khandeshmatrimony.com for confirmation.',
     
     // Browse
@@ -120,7 +120,7 @@ export const translations = {
     footerContact: 'Contact Us',
     footerPhone: 'Phone',
     footerEmail: 'Email',
-    footerRights: '© 2025 Khandesh Matrimony. All rights reserved.',
+    footerRights: '© 2026 Khandesh Matrimony. All rights reserved.',
     footerDisclaimer: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
     topDisclaimer: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
     termsAndConditions: 'Terms & Conditions',
@@ -193,7 +193,7 @@ export const translations = {
     photosSelected: 'फोटो निवडले',
     submit: 'सबमिट करा',
     paymentInstructions: 'पेमेंट सूचना',
-    paymentNote: 'कृपया UPI ID: 9167681454@ybl वर तुमच्या KM नोंदणी क्रमांकासह पेमेंट पाठवा.',
+    paymentNote: 'कृपया UPI ID: {upi_id} वर तुमच्या KM नोंदणी क्रमांकासह पेमेंट पाठवा.',
     contactAdmin: 'पुष्टीकरणासाठी info@khandeshmatrimony.com वर संपर्क साधा.',
     
     // Browse

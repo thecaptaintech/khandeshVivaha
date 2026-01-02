@@ -7,8 +7,8 @@ import './Footer.css';
 const Footer = () => {
   const { t } = useLanguage();
   const [settings, setSettings] = useState({
-    contact_whatsapp: '9167681454',
-    contact_email: 'info@khandeshmatrimony.com'
+    contact_whatsapp: '',
+    contact_email: ''
   });
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const Footer = () => {
     try {
       const fetchedSettings = await getPublicSettings();
       setSettings({
-        contact_whatsapp: fetchedSettings.contact_whatsapp || '9167681454',
+        contact_whatsapp: fetchedSettings.contact_whatsapp || '',
         contact_email: fetchedSettings.contact_email || 'info@khandeshmatrimony.com'
       });
     } catch (error) {

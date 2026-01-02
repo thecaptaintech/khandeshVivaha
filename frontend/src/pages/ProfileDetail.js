@@ -12,7 +12,7 @@ const ProfileDetail = () => {
   const [loading, setLoading] = useState(true);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [settings, setSettings] = useState({
-    contact_whatsapp: '9167681454',
+    contact_whatsapp: '',
     contact_email: 'info@khandeshmatrimony.com'
   });
 
@@ -26,7 +26,7 @@ const ProfileDetail = () => {
     try {
       const fetchedSettings = await getPublicSettings();
       setSettings({
-        contact_whatsapp: fetchedSettings.contact_whatsapp || '9167681454',
+        contact_whatsapp: fetchedSettings.contact_whatsapp || '',
         contact_email: fetchedSettings.contact_email || 'info@khandeshmatrimony.com'
       });
     } catch (error) {

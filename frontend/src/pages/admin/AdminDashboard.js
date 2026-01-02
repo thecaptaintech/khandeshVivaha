@@ -76,7 +76,7 @@ const AdminDashboard = () => {
   // Settings state
   const [settings, setSettings] = useState({
     payment_qr_code: null,
-    contact_whatsapp: '9167681454',
+    contact_whatsapp: '',
     contact_email: 'info@khandeshmatrimony.com',
     upi_id: '',
     registration_fee: '',

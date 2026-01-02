@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { registerUser, getSettings, UPLOADS_URL } from '../services/api';
+import { registerUser, getPublicSettings, UPLOADS_URL } from '../services/api';
 import './Register.css';
 
 const Register = () => {
@@ -76,7 +76,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [settings, setSettings] = useState({
     payment_qr_code: null,
-    contact_whatsapp: '9167681454',
+    contact_whatsapp: '',
     contact_email: 'info@khandeshmatrimony.com',
     upi_id: '',
     registration_fee: ''
@@ -482,20 +482,24 @@ const Register = () => {
     }
   };
 
-  // Fetch settings when success is true
+  // Fetch settings on component mount
   useEffect(() => {
-    if (success) {
-      const fetchSettings = async () => {
-        try {
-          const fetchedSettings = await getSettings();
-          setSettings(fetchedSettings);
-        } catch (error) {
-          console.error('Error fetching settings:', error);
-        }
-      };
-      fetchSettings();
-    }
-  }, [success]);
+    const fetchSettings = async () => {
+      try {
+        const fetchedSettings = await getPublicSettings();
+        setSettings({
+          payment_qr_code: fetchedSettings.payment_qr_code || null,
+          contact_whatsapp: fetchedSettings.contact_whatsapp || '',
+          contact_email: fetchedSettings.contact_email || '',
+          upi_id: fetchedSettings.upi_id || '',
+          registration_fee: fetchedSettings.registration_fee || ''
+        });
+      } catch (error) {
+        console.error('Error fetching settings:', error);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   // Copy registration number to clipboard
   const copyRegistrationNumber = async (registerId, e) => {
@@ -616,7 +620,7 @@ const Register = () => {
                   📧 {settings.contact_email || 'info@khandeshmatrimony.com'}
                 </strong>
                 <strong style={{color: '#DC143C'}}>
-                  📱 {settings.contact_whatsapp || '9167681454'}
+                  📱 {settings.contact_whatsapp || ''}
                 </strong>
               </div>
             </div>
