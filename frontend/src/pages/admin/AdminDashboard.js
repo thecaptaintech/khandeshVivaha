@@ -80,7 +80,7 @@ const AdminDashboard = () => {
     contact_email: 'info@khandeshmatrimony.com',
     upi_id: '',
     registration_fee: '',
-    banner_text_english: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
+    banner_text_english: 'Khandesh Matrimony is a matchmaking service only. Please verify all details personally before marriage.',
     banner_text_marathi: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.'
   });
   const [settingsLoading, setSettingsLoading] = useState(false);
@@ -817,7 +817,7 @@ const AdminDashboard = () => {
                       rows="3"
                       value={settings.banner_text_english || ''}
                       onChange={(e) => handleSettingsChange('banner_text_english', e.target.value)}
-                      placeholder="Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage."
+                      placeholder="Khandesh Matrimony is a matchmaking service only. Please verify all details personally before marriage."
                       style={{resize: 'vertical', minHeight: '80px'}}
                     />
                   </div>

@@ -13,7 +13,7 @@ const Home = () => {
     contact_email: '',
     upi_id: '',
     registration_fee: '₹1500 (6 months)',
-    banner_text_english: 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
+    banner_text_english: 'Khandesh Matrimony is a matchmaking service only. Please verify all details personally before marriage.',
     banner_text_marathi: 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.'
   });
 
@@ -27,7 +27,7 @@ const Home = () => {
           contact_email: fetchedSettings.contact_email || '',
           upi_id: fetchedSettings.upi_id || '',
           registration_fee: fetchedSettings.registration_fee || '₹1500 (6 months)',
-          banner_text_english: fetchedSettings.banner_text_english || 'Khandesh Matrimony is a matchmaking service only. Please verify all details independently before marriage.',
+          banner_text_english: fetchedSettings.banner_text_english || 'Khandesh Matrimony is a matchmaking service only. Please verify all details personally before marriage.',
           banner_text_marathi: fetchedSettings.banner_text_marathi || 'खान्देश मॅट्रिमनी ही केवळ ओळख करून देणारी सेवा आहे. विवाह ठरवण्याआधी सर्व माहिती स्वतः पडताळून घ्या.'
         });
       } catch (error) {
